@@ -86,13 +86,24 @@ async function deletePost(id) {
   return prisma.posts.delete({ where: { id } });
 }
 
+// D2: Bulk delete posts by author_id
+async function deletePostsByAuthor(authorId) {
+  const result = await prisma.posts.deleteMany({ where: { authorId } });
+  return result.count;
+}
+
 async function close() {
   await prisma.$disconnect();
+}
+
+async function warmQuery() {
+  await prisma.$queryRaw`SELECT 1`;
 }
 
 module.exports = {
   init, prisma, createUser, createPost, bulkInsertPosts,
   getUserById, getPostById, getPaginatedPosts,
   getPostWithAuthor, createPostWithCategories, getPostWithCategories,
-  updateUser, updatePost, deleteUser, deletePost, close,
+  updateUser, updatePost, deleteUser, deletePost, deletePostsByAuthor,
+  close, warmQuery,
 };

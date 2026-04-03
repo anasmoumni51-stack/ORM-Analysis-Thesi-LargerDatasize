@@ -54,6 +54,10 @@ async function close() {
   if (sequelize) await sequelize.close();
 }
 
+async function warmQuery() {
+  await sequelize.query('SELECT 1');
+}
+
 async function createUser(username, email) {
   return User.create({ username, email });
 }
@@ -63,6 +67,8 @@ async function createPost(title, content, published, views, author_id) {
 }
 
 async function bulkInsertPosts(postsArray) {
+  // Sequelize's bulkCreate does a single INSERT INTO ... VALUES (...), (...) statement
+  // This is correct per the spec — it just had high CV due to pool jitter, now fixed
   return Post.bulkCreate(postsArray);
 }
 
@@ -93,31 +99,24 @@ async function getPostWithCategories(id) {
 }
 
 async function updateUser(id, data) {
-  const user = await User.findByPk(id);
-  if (!user) return null;
-  await user.update(data);
-  return user;
+  return User.update(data, { where: { id } });
 }
 
 async function updatePost(id, data) {
-  const post = await Post.findByPk(id);
-  if (!post) return null;
-  await post.update(data);
-  return post;
+  return Post.update(data, { where: { id } });
 }
 
 async function deleteUser(id) {
-  const user = await User.findByPk(id);
-  if (!user) return false;
-  await user.destroy();
-  return true;
+  return (await User.destroy({ where: { id } })) > 0;
 }
 
 async function deletePost(id) {
-  const post = await Post.findByPk(id);
-  if (!post) return false;
-  await post.destroy();
-  return true;
+  return (await Post.destroy({ where: { id } })) > 0;
 }
 
-module.exports = { init, close, createUser, createPost, bulkInsertPosts, getUserById, getPostById, getPaginatedPosts, getPostWithAuthor, createPostWithCategories, getPostWithCategories, updateUser, updatePost, deleteUser, deletePost };
+// D2: Bulk delete posts by author_id
+async function deletePostsByAuthor(authorId) {
+  return Post.destroy({ where: { author_id: authorId } });
+}
+
+module.exports = { init, close, warmQuery, createUser, createPost, bulkInsertPosts, getUserById, getPostById, getPaginatedPosts, getPostWithAuthor, createPostWithCategories, getPostWithCategories, updateUser, updatePost, deleteUser, deletePost, deletePostsByAuthor };

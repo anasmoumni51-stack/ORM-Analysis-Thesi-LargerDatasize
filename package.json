@@ -9,6 +9,7 @@
     "db:down": "docker compose down",
     "install:all": "npm install && npx prisma generate",
     "benchmark": "node --expose-gc src/benchmark.js",
+    "benchmark:fast": "node --expose-gc src/benchmark-fast.js",
     "reporter": "node --expose-gc src/reporter.js",
     "start": "npm run db:up && npm run db:setup && npm run install:all && npm run benchmark && npm run reporter && npm run db:down",
     "test": "jest",

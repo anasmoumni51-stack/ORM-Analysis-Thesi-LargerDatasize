@@ -371,6 +371,41 @@ describe('DELETE Operations', () => {
       expect(verification.rows.length).toBe(0);
     });
   });
+
+  describe('D2-bulk: Bulk Delete Posts by Author', () => {
+    const prefix = generateUniquePrefix();
+
+    test.each([
+      ['Raw SQL', rawSql],
+      ['Prisma', prisma],
+      ['TypeORM', typeorm],
+      ['Sequelize', sequelizeDb],
+      ['Drizzle', drizzleDb],
+    ])('%s bulk deletes all posts by author', async (name, db) => {
+      const user = await rawSql.createUser(`${prefix}_author`, `${prefix}_author@test.com`);
+      const authorId = user?.id ?? user?.[0]?.id ?? user;
+
+      // Create 3 posts for this author
+      await rawSql.createPost(`${prefix} Post 1`, 'Content 1', false, 0, authorId);
+      await rawSql.createPost(`${prefix} Post 2`, 'Content 2', false, 0, authorId);
+      await rawSql.createPost(`${prefix} Post 3`, 'Content 3', false, 0, authorId);
+
+      const before = await testPool.query(
+        'SELECT COUNT(*) FROM posts WHERE author_id = $1',
+        [authorId]
+      );
+      expect(parseInt(before.rows[0].count)).toBe(3);
+
+      const result = await db.deletePostsByAuthor(authorId);
+      expect(result).toBeGreaterThanOrEqual(3);
+
+      const after = await testPool.query(
+        'SELECT COUNT(*) FROM posts WHERE author_id = $1',
+        [authorId]
+      );
+      expect(parseInt(after.rows[0].count)).toBe(0);
+    });
+  });
 });
 
 describe('JOIN Operations', () => {

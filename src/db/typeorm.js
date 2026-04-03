@@ -51,6 +51,10 @@ async function init() { await dataSource.initialize(); }
 
 async function close() { await dataSource.destroy(); }
 
+async function warmQuery() {
+  await dataSource.query('SELECT 1');
+}
+
 async function createUser(username, email) {
   return dataSource.getRepository('users').save({ username, email });
 }
@@ -61,7 +65,9 @@ async function createPost(title, content, published, views, author_id) {
 
 async function bulkInsertPosts(postsData) {
   const repo = dataSource.getRepository('posts');
-  return repo.save(postsData);
+  // Use insert() instead of save() to ensure a single bulk INSERT query
+  // save() may execute N individual INSERTs or trigger entity lifecycle overhead
+  return repo.insert(postsData);
 }
 
 async function getUserById(id) {
@@ -77,15 +83,16 @@ async function getPaginatedPosts(offset, limit) {
 }
 
 async function getPostWithAuthor(id) {
-  return dataSource.getRepository('posts').createQueryBuilder('p').leftJoinAndSelect('p.author', 'u').where('p.id = :id', { id }).getOne();
+  return dataSource.getRepository('posts').createQueryBuilder('p').innerJoinAndSelect('p.author', 'u').where('p.id = :id', { id }).getOne();
 }
 
 async function createPostWithCategories(postData, categoryIds) {
   const postRepo = dataSource.getRepository('posts');
-  const catRepo = dataSource.getRepository('categories');
+  // Save post first
   const post = await postRepo.save(postData);
-  const cats = await catRepo.findByIds(categoryIds);
-  post.categories = cats;
+  // Attach categories by ID reference — no need to fetch them from DB
+  // This reduces 3 queries (save post + findByIds + save relations) to 2 (save post + save relations)
+  post.categories = categoryIds.map((id) => ({ id }));
   return postRepo.save(post);
 }
 
@@ -94,27 +101,28 @@ async function getPostWithCategories(id) {
 }
 
 async function updateUser(id, data) {
-  const repo = dataSource.getRepository('users');
-  await repo.update(id, data);
-  return repo.findOneBy({ id });
+  await dataSource.getRepository('users').update(id, data);
 }
 
 async function updatePost(id, data) {
   const repo = dataSource.getRepository('posts');
   await repo.update(id, data);
-  return repo.findOneBy({ id });
 }
 
 async function deleteUser(id) {
-  const repo = dataSource.getRepository('users');
-  const user = await repo.findOneBy({ id });
-  return repo.remove(user);
+  const result = await dataSource.getRepository('users').delete(id);
+  return (result.affected ?? 0) > 0;
 }
 
 async function deletePost(id) {
-  const repo = dataSource.getRepository('posts');
-  const post = await repo.findOneBy({ id });
-  return repo.remove(post);
+  const result = await dataSource.getRepository('posts').delete(id);
+  return (result.affected ?? 0) > 0;
 }
 
-module.exports = { init, close, createUser, createPost, bulkInsertPosts, getUserById, getPostById, getPaginatedPosts, getPostWithAuthor, createPostWithCategories, getPostWithCategories, updateUser, updatePost, deleteUser, deletePost };
+// D2: Bulk delete posts by author_id
+async function deletePostsByAuthor(authorId) {
+  const result = await dataSource.getRepository('posts').delete({ author_id: authorId });
+  return result.affected ?? 0;
+}
+
+module.exports = { init, close, warmQuery, createUser, createPost, bulkInsertPosts, getUserById, getPostById, getPaginatedPosts, getPostWithAuthor, createPostWithCategories, getPostWithCategories, updateUser, updatePost, deleteUser, deletePost, deletePostsByAuthor };

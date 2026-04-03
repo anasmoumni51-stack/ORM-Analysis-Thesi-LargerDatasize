@@ -49,6 +49,10 @@ const close = async () => {
   }
 };
 
+const warmQuery = async () => {
+  await db.execute('SELECT 1');
+};
+
 const createUser = async (username, email) => {
   const result = await db.insert(users).values({ username, email }).returning();
   return result[0];
@@ -68,7 +72,7 @@ const getUserById = (id) => {
 };
 
 const getPostById = (id) => {
-  return db.select().from(posts).where(eq(posts.id, id)).limit(1);
+  return db.select().from(posts).where(eq(posts.id, id)).limit(1).then(res => res.length > 0 ? res[0] : null);
 };
 
 const getPaginatedPosts = (offset, limit) => {
@@ -90,13 +94,20 @@ const createPostWithCategories = async (postData, categoryIds) => {
   return newPost;
 };
 
-const getPostWithCategories = (id) => {
-  return db
+const getPostWithCategories = async (id) => {
+  const result = await db
     .select()
     .from(posts)
-    .innerJoin(postCategories, eq(posts.id, postCategories.postId))
-    .innerJoin(categories, eq(postCategories.categoryId, categories.id))
+    .leftJoin(postCategories, eq(posts.id, postCategories.postId))
+    .leftJoin(categories, eq(postCategories.categoryId, categories.id))
     .where(eq(posts.id, id));
+
+  if (result.length === 0) return null;
+
+  // Aggregate: one post with all its categories (like rawsql's json_agg)
+  const post = result[0].posts;
+  post.categories = result.map(r => r.categories);
+  return post;
 };
 
 const updateUser = async (id, data) => {
@@ -119,9 +130,16 @@ const deletePost = async (id) => {
   return result[0] || null;
 };
 
+// D2: Bulk delete posts by author_id
+const deletePostsByAuthor = async (authorId) => {
+  const result = await db.delete(posts).where(eq(posts.author_id, authorId)).returning();
+  return result.length || 0;
+};
+
 module.exports = {
   init,
   close,
+  warmQuery,
   createUser,
   createPost,
   bulkInsertPosts,
@@ -135,6 +153,7 @@ module.exports = {
   updatePost,
   deleteUser,
   deletePost,
+  deletePostsByAuthor,
   users,
   posts,
   categories,

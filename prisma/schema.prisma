@@ -12,7 +12,7 @@ model users {
   username   String   @unique @db.VarChar(50)
   email      String   @unique @db.VarChar(100)
   created_at DateTime @default(now())
-  posts      posts[]
+  posts      posts[]  @relation("UserPosts")
 }
 
 model posts {
@@ -21,22 +21,22 @@ model posts {
   content           String?
   published         Boolean             @default(false)
   views             Int                 @default(0)
-  author            users               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author            users               @relation("UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
   authorId          Int                 @map("author_id")
-  post_categories   post_categories[]
+  post_categories   post_categories[]   @relation("PostToCategory")
   created_at        DateTime            @default(now())
 }
 
 model categories {
   id              Int                 @id @default(autoincrement())
   name            String              @unique @db.VarChar(50)
-  post_categories post_categories[]
+  post_categories post_categories[]   @relation("PostToCategory")
 }
 
 model post_categories {
-  post        posts      @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post        posts      @relation("PostToCategory", fields: [post_id], references: [id], onDelete: Cascade)
   post_id     Int
-  category    categories @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category    categories @relation("PostToCategory", fields: [category_id], references: [id], onDelete: Cascade)
   category_id Int
 
   @@id([post_id, category_id])
