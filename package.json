@@ -1,0 +1,35 @@
+{
+  "name": "orm-benchmark",
+  "version": "1.0.0",
+  "description": "ORM Query Languages Benchmark - Comparing Prisma, TypeORM, Sequelize, Drizzle, and Raw SQL",
+  "main": "src/benchmark.js",
+  "scripts": {
+    "db:up": "docker compose up -d postgres",
+    "db:setup": "node src/schema-setup.js",
+    "db:down": "docker compose down",
+    "install:all": "npm install && npx prisma generate",
+    "benchmark": "node --expose-gc src/benchmark.js",
+    "reporter": "node --expose-gc src/reporter.js",
+    "start": "npm run db:up && npm run db:setup && npm run install:all && npm run benchmark && npm run reporter && npm run db:down",
+    "test": "jest",
+    "test:unit": "jest src/stats.test.js",
+    "test:integration": "jest src/integration.test.js",
+    "test:coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.2",
+    "dotenv": "^17.4.0",
+    "drizzle-kit": "^0.31.10",
+    "drizzle-orm": "^0.36",
+    "pg": "^8.13",
+    "pg-hstore": "^2.3",
+    "postgres": "^3.4",
+    "prisma": "^6.2",
+    "reflect-metadata": "^0.2.2",
+    "sequelize": "^6.37",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

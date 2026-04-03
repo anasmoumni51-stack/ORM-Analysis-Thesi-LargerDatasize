@@ -1,0 +1,43 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model users {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique @db.VarChar(50)
+  email      String   @unique @db.VarChar(100)
+  created_at DateTime @default(now())
+  posts      posts[]
+}
+
+model posts {
+  id                Int                 @id @default(autoincrement())
+  title             String              @db.VarChar(200)
+  content           String?
+  published         Boolean             @default(false)
+  views             Int                 @default(0)
+  author            users               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId          Int                 @map("author_id")
+  post_categories   post_categories[]
+  created_at        DateTime            @default(now())
+}
+
+model categories {
+  id              Int                 @id @default(autoincrement())
+  name            String              @unique @db.VarChar(50)
+  post_categories post_categories[]
+}
+
+model post_categories {
+  post        posts      @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id     Int
+  category    categories @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category_id Int
+
+  @@id([post_id, category_id])
+}

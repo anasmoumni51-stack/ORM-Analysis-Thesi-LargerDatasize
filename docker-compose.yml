@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: orm-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: thesis2026
+      POSTGRES_DB: orm_benchmark
+    ports:
+      - "5432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
