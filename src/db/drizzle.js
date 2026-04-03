@@ -79,12 +79,15 @@ const getPaginatedPosts = (offset, limit) => {
   return db.select().from(posts).orderBy(posts.id).limit(limit).offset(offset);
 };
 
-const getPostWithAuthor = (id) => {
-  return db
+const getPostWithAuthor = async (id) => {
+  const result = await db
     .select()
     .from(posts)
     .innerJoin(users, eq(posts.author_id, users.id))
     .where(eq(posts.id, id));
+
+  // Return single object or null (like other ORMs), not array
+  return result.length > 0 ? result[0] : null;
 };
 
 const createPostWithCategories = async (postData, categoryIds) => {
@@ -132,8 +135,10 @@ const deletePost = async (id) => {
 
 // D2: Bulk delete posts by author_id
 const deletePostsByAuthor = async (authorId) => {
-  const result = await db.delete(posts).where(eq(posts.author_id, authorId)).returning();
-  return result.length || 0;
+  // Remove .returning() to avoid fetching all deleted rows (overhead at large scale)
+  // Drizzle returns { count } property without .returning()
+  const result = await db.delete(posts).where(eq(posts.author_id, authorId));
+  return result.count || 0;
 };
 
 module.exports = {

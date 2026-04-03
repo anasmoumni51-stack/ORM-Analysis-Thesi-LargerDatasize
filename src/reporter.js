@@ -9,6 +9,13 @@ if (files.length === 0) {
   process.exit(0);
 }
 
+// Capture all output for file export
+let output = '';
+function log(line = '') {
+  console.log(line);
+  output += line + '\n';
+}
+
 const OP_NAMES = {
   C1: 'Create User',
   C2: 'Create Post',
@@ -32,16 +39,16 @@ for (const file of files) {
   const data = JSON.parse(fs.readFileSync(path.join(resultsDir, file), 'utf8'));
   const size = file.replace('results-', '').replace('.json', '');
 
-  console.log(`\n${'='.repeat(80)}`);
-  console.log(`Dataset Size: ${size}`);
-  console.log(`${'='.repeat(80)}`);
+  log(`\n${'='.repeat(80)}`);
+  log(`Dataset Size: ${size}`);
+  log(`${'='.repeat(80)}`);
 
   // ── Table 1: Execution Time — Mean (CV%) ──
-  console.log('\n┌─ Execution Time (ms) — Mean (CV%)');
-  console.log('');
+  log('\n┌─ Execution Time (ms) — Mean (CV%)');
+  log('');
   const timeHeader = 'Operation'.padEnd(32) + FWS.map(f => f.padStart(16)).join('');
-  console.log(timeHeader);
-  console.log('-'.repeat(timeHeader.length));
+  log(timeHeader);
+  log('-'.repeat(timeHeader.length));
 
   for (const opId of OP_CODES) {
     const label = `${opId}: ${OP_NAMES[opId] || ''}`.padEnd(32);
@@ -51,17 +58,17 @@ for (const file of files) {
       const cv = entry.stats.cv.toFixed(1);
       return `${entry.stats.mean.toFixed(3)} (${cv}%)`.padStart(16);
     });
-    console.log(label + cells.join(''));
+    log(label + cells.join(''));
   }
 
   // ── Table 2: Detailed Execution Time Stats ──
-  console.log('\n┌─ Detailed Execution Time Stats (ms)');
-  console.log('');
+  log('\n┌─ Detailed Execution Time Stats (ms)');
+  log('');
   for (const opId of OP_CODES) {
-    console.log(`\n  ${opId}: ${OP_NAMES[opId]}`);
+    log(`\n  ${opId}: ${OP_NAMES[opId]}`);
     const detailHeader = 'Framework'.padEnd(14) + 'Mean'.padStart(10) + 'Min'.padStart(10) + 'Max'.padStart(10) + 'StdDev'.padStart(10) + 'CV%'.padStart(10);
-    console.log(detailHeader);
-    console.log('  ' + '-'.repeat(detailHeader.length - 2));
+    log(detailHeader);
+    log('  ' + '-'.repeat(detailHeader.length - 2));
 
     for (const fw of FWS) {
       const entry = data[fw]?.[opId];
@@ -73,16 +80,16 @@ for (const file of files) {
         s.max.toFixed(3).padStart(10) +
         s.stddev.toFixed(3).padStart(10) +
         s.cv.toFixed(2).padStart(10);
-      console.log('  ' + row);
+      log('  ' + row);
     }
   }
 
   // ── Table 3: Memory Consumption — Mean (CV%) ──
-  console.log('\n┌─ Memory Consumption (MB) — Mean (CV%)');
-  console.log('');
+  log('\n┌─ Memory Consumption (MB) — Mean (CV%)');
+  log('');
   const memHeader = 'Operation'.padEnd(32) + FWS.map(f => f.padStart(16)).join('');
-  console.log(memHeader);
-  console.log('-'.repeat(memHeader.length));
+  log(memHeader);
+  log('-'.repeat(memHeader.length));
 
   for (const opId of OP_CODES) {
     const label = `${opId}: ${OP_NAMES[opId] || ''}`.padEnd(32);
@@ -92,17 +99,17 @@ for (const file of files) {
       const cv = entry.memoryStats.cv.toFixed(1);
       return `${entry.memoryStats.mean.toFixed(2)} (${cv}%)`.padStart(16);
     });
-    console.log(label + cells.join(''));
+    log(label + cells.join(''));
   }
 
   // ── Table 4: Detailed Memory Stats ──
-  console.log('\n┌─ Detailed Memory Stats (MB)');
-  console.log('');
+  log('\n┌─ Detailed Memory Stats (MB)');
+  log('');
   for (const opId of OP_CODES) {
-    console.log(`\n  ${opId}: ${OP_NAMES[opId]}`);
+    log(`\n  ${opId}: ${OP_NAMES[opId]}`);
     const memDetailHeader = 'Framework'.padEnd(14) + 'Mean'.padStart(10) + 'Min'.padStart(10) + 'Max'.padStart(10) + 'StdDev'.padStart(10) + 'CV%'.padStart(10);
-    console.log(memDetailHeader);
-    console.log('  ' + '-'.repeat(memDetailHeader.length - 2));
+    log(memDetailHeader);
+    log('  ' + '-'.repeat(memDetailHeader.length - 2));
 
     for (const fw of FWS) {
       const entry = data[fw]?.[opId];
@@ -114,29 +121,29 @@ for (const file of files) {
         m.max.toFixed(3).padStart(10) +
         m.stddev.toFixed(3).padStart(10) +
         m.cv.toFixed(2).padStart(10);
-      console.log('  ' + row);
+      log('  ' + row);
     }
   }
 
   // ── Overhead % vs Raw SQL ──
-  console.log('\n┌─ Overhead % vs Raw SQL (based on mean execution time)');
-  console.log('');
+  log('\n┌─ Overhead % vs Raw SQL (based on mean execution time)');
+  log('');
   for (const fw of FWS) {
     if (fw === 'rawsql') continue;
     const overhead = data[fw]?.overhead;
     if (!overhead) continue;
-    console.log(`  ${fw}:`);
+    log(`  ${fw}:`);
     for (const opId of OP_CODES) {
       if (overhead[opId] !== undefined) {
         const label = `${opId} (${OP_NAMES[opId]})`.padEnd(38);
-        console.log(`    ${label} ${overhead[opId].toFixed(2)}%`);
+        log(`    ${label} ${overhead[opId].toFixed(2)}%`);
       }
     }
   }
 
   // ── Stability Report ──
-  console.log('\n┌─ Stability Report (CV% < 15% = stable)');
-  console.log('');
+  log('\n┌─ Stability Report (CV% < 15% = stable)');
+  log('');
   for (const fw of FWS) {
     let fwUnstable = 0;
     for (const opId of OP_CODES) {
@@ -146,26 +153,26 @@ for (const file of files) {
       if (stable === 'UNSTABLE') fwUnstable++;
     }
     const status = fwUnstable === 0 ? 'ALL STABLE' : `${fwUnstable} unstable`;
-    console.log(`  ${fw}: ${status}`);
+    log(`  ${fw}: ${status}`);
     for (const opId of OP_CODES) {
       const entry = data[fw]?.[opId];
       if (!entry) continue;
       const stable = entry.stats.cv < 15 ? 'OK' : 'UNSTABLE';
-      console.log(`    ${`${opId} (${OP_NAMES[opId]})`.padEnd(38)} CV=${entry.stats.cv.toFixed(2)}% [${stable}]`);
+      log(`    ${`${opId} (${OP_NAMES[opId]})`.padEnd(38)} CV=${entry.stats.cv.toFixed(2)}% [${stable}]`);
     }
   }
 }
 
 // ── Summary across all dataset sizes ──
-console.log(`\n${'='.repeat(80)}`);
-console.log('CROSS-SIZE SUMMARY — Mean Execution Time (ms)');
-console.log(`${'='.repeat(80)}`);
+log(`\n${'='.repeat(80)}`);
+log('CROSS-SIZE SUMMARY — Mean Execution Time (ms)');
+log(`${'='.repeat(80)}`);
 
 for (const opId of OP_CODES) {
-  console.log(`\n  ${opId}: ${OP_NAMES[opId]}`);
+  log(`\n  ${opId}: ${OP_NAMES[opId]}`);
   const sumHeader = 'Size'.padEnd(10) + FWS.map(f => f.padStart(16)).join('');
-  console.log(sumHeader);
-  console.log('  ' + '-'.repeat(sumHeader.length - 2));
+  log(sumHeader);
+  log('  ' + '-'.repeat(sumHeader.length - 2));
 
   for (const file of files) {
     const size = file.replace('results-', '').replace('.json', '');
@@ -175,20 +182,20 @@ for (const opId of OP_CODES) {
       if (!entry) return ''.padStart(16);
       return entry.stats.mean.toFixed(3).padStart(16);
     }).join('');
-    console.log('  ' + row);
+    log('  ' + row);
   }
 }
 
-console.log(`\n${'='.repeat(80)}`);
-console.log('CROSS-SIZE SUMMARY — Overhead % vs Raw SQL');
-console.log(`${'='.repeat(80)}`);
+log(`\n${'='.repeat(80)}`);
+log('CROSS-SIZE SUMMARY — Overhead % vs Raw SQL');
+log(`${'='.repeat(80)}`);
 
 for (const fw of FWS) {
   if (fw === 'rawsql') continue;
-  console.log(`\n  ${fw}:`);
+  log(`\n  ${fw}:`);
   const overheadHeader = 'Size'.padEnd(10) + OP_CODES.map(op => op.padStart(8)).join('');
-  console.log(overheadHeader);
-  console.log('  ' + '-'.repeat(overheadHeader.length - 2));
+  log(overheadHeader);
+  log('  ' + '-'.repeat(overheadHeader.length - 2));
 
   for (const file of files) {
     const size = file.replace('results-', '').replace('.json', '');
@@ -200,8 +207,14 @@ for (const fw of FWS) {
       if (val === undefined) return ''.padStart(8);
       return (val.toFixed(1) + '%').padStart(8);
     }).join('');
-    console.log('  ' + row);
+    log('  ' + row);
   }
 }
 
-console.log('\nAll results reported.');
+log('\nAll results reported.');
+
+// ── Write output to file ──
+const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+const outFile = path.join(resultsDir, `report-${timestamp}.txt`);
+fs.writeFileSync(outFile, output);
+console.log(`\nResults exported to: ${outFile}`);

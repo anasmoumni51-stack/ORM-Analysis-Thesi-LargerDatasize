@@ -1,0 +1,1794 @@
+
+================================================================================
+Dataset Size: 100
+================================================================================
+
+┌─ Execution Time (ms) — Mean (CV%)
+
+Operation                                 rawsql          prisma         typeorm       sequelize         drizzle
+----------------------------------------------------------------------------------------------------------------
+C1: Create User                    3.123 (15.7%)   3.405 (13.5%)   6.916 (37.6%)   4.385 (11.6%)   4.416 (10.3%)
+C2: Create Post                    3.097 (14.1%)   3.483 (11.8%)   6.255 (11.7%)   4.418 (17.7%)   4.434 (11.6%)
+C3: Bulk Insert Posts (10)         3.514 (16.2%)   5.163 (13.0%)   4.653 (13.5%)   4.979 (23.0%)   5.315 (12.6%)
+R1: Get User By ID                 1.854 (16.6%)   2.369 (18.8%)   2.589 (12.2%)    2.345 (9.2%)    2.998 (7.8%)
+R2: Get Post By ID                 1.735 (15.7%)   2.352 (12.8%)  4.761 (193.6%)   2.426 (15.0%)    3.186 (9.9%)
+R3: Get Paginated Posts            2.022 (16.3%)   2.382 (13.5%)   2.852 (12.8%)   3.381 (97.8%)   3.360 (10.6%)
+U1: Update User                    2.775 (10.5%)   3.452 (14.4%)   3.786 (13.5%)   3.687 (14.4%)   4.289 (10.8%)
+U2: Update Post                    3.217 (51.3%)   3.510 (17.7%)   4.010 (25.6%)   3.578 (10.3%)   4.257 (10.7%)
+D1: Delete User                    3.035 (18.9%)   3.549 (18.9%)   3.824 (13.7%)   3.311 (12.9%)   4.493 (17.2%)
+D2: Bulk Delete Posts by Author    1.717 (13.2%)   2.157 (19.8%)   2.410 (14.1%)   1.994 (15.1%)   3.263 (14.2%)
+J1: Get Post With Author           2.058 (16.6%)   3.521 (11.4%)   3.497 (19.1%)   3.082 (11.1%)   3.319 (13.2%)
+M1: Create Post With Categories    5.069 (11.2%)   7.241 (10.5%)  15.120 (12.0%)    8.241 (9.8%)   7.890 (18.6%)
+M2: Get Post With Categories       2.294 (15.5%)   3.261 (11.8%)   3.417 (13.4%)   3.805 (48.7%)   3.793 (16.0%)
+
+┌─ Detailed Execution Time Stats (ms)
+
+
+  C1: Create User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.123     2.424     4.018     0.489     15.66
+  prisma             3.405     2.698     4.292     0.460     13.51
+  typeorm            6.916     4.944    16.943     2.600     37.59
+  sequelize          4.385     3.466     5.241     0.508     11.59
+  drizzle            4.416     3.699     5.308     0.457     10.34
+
+  C2: Create Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.097     2.318     3.893     0.436     14.08
+  prisma             3.483     2.684     4.483     0.412     11.82
+  typeorm            6.255     5.152     7.650     0.730     11.67
+  sequelize          4.418     3.622     6.838     0.782     17.69
+  drizzle            4.434     3.489     5.376     0.512     11.55
+
+  C3: Bulk Insert Posts (10)
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.514     2.832     4.938     0.568     16.15
+  prisma             5.163     4.316     6.675     0.671     12.99
+  typeorm            4.653     3.801     6.328     0.627     13.47
+  sequelize          4.979     3.870     9.297     1.147     23.04
+  drizzle            5.315     4.478     6.675     0.671     12.62
+
+  R1: Get User By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             1.854     1.352     2.652     0.308     16.61
+  prisma             2.369     1.856     3.532     0.446     18.80
+  typeorm            2.589     2.125     3.353     0.317     12.24
+  sequelize          2.345     2.058     2.805     0.215      9.17
+  drizzle            2.998     2.644     3.484     0.235      7.82
+
+  R2: Get Post By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             1.735     1.425     2.401     0.272     15.69
+  prisma             2.352     1.984     3.344     0.300     12.77
+  typeorm            4.761     2.178    44.904     9.215    193.56
+  sequelize          2.426     1.972     3.157     0.363     14.98
+  drizzle            3.186     2.698     3.739     0.315      9.90
+
+  R3: Get Paginated Posts
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.022     1.591     3.145     0.329     16.29
+  prisma             2.382     1.947     3.105     0.321     13.47
+  typeorm            2.852     2.358     3.668     0.366     12.85
+  sequelize          3.381     2.171    17.709     3.308     97.82
+  drizzle            3.360     3.032     4.315     0.357     10.63
+
+  U1: Update User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.775     2.187     3.351     0.290     10.46
+  prisma             3.452     2.801     4.449     0.497     14.41
+  typeorm            3.786     3.020     4.744     0.511     13.50
+  sequelize          3.687     3.146     5.265     0.529     14.35
+  drizzle            4.289     3.543     5.136     0.462     10.77
+
+  U2: Update Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.217     2.231    10.177     1.650     51.29
+  prisma             3.510     2.840     5.416     0.621     17.69
+  typeorm            4.010     3.130     8.080     1.029     25.65
+  sequelize          3.578     2.820     4.307     0.369     10.31
+  drizzle            4.257     3.607     5.450     0.455     10.70
+
+  D1: Delete User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.035     2.085     4.617     0.574     18.90
+  prisma             3.549     2.775     5.138     0.669     18.86
+  typeorm            3.824     3.121     5.245     0.523     13.67
+  sequelize          3.311     2.541     4.391     0.425     12.85
+  drizzle            4.493     3.485     6.832     0.771     17.16
+
+  D2: Bulk Delete Posts by Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             1.717     1.377     2.120     0.227     13.22
+  prisma             2.157     1.649     3.467     0.428     19.83
+  typeorm            2.410     2.018     3.215     0.340     14.08
+  sequelize          1.994     1.701     3.125     0.300     15.07
+  drizzle            3.263     2.533     3.865     0.464     14.22
+
+  J1: Get Post With Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.058     1.580     2.961     0.342     16.62
+  prisma             3.521     2.852     4.393     0.402     11.43
+  typeorm            3.497     2.652     5.187     0.669     19.12
+  sequelize          3.082     2.621     3.848     0.341     11.06
+  drizzle            3.319     2.781     4.270     0.439     13.22
+
+  M1: Create Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             5.069     4.177     6.295     0.566     11.17
+  prisma             7.241     6.062     9.049     0.760     10.50
+  typeorm           15.120    12.549    21.194     1.808     11.96
+  sequelize          8.241     6.834    10.504     0.807      9.79
+  drizzle            7.890     6.475    13.550     1.469     18.62
+
+  M2: Get Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.294     1.809     3.278     0.356     15.51
+  prisma             3.261     2.652     3.964     0.385     11.80
+  typeorm            3.417     2.816     4.412     0.456     13.35
+  sequelize          3.805     2.929    11.726     1.852     48.69
+  drizzle            3.793     3.093     5.377     0.607     16.00
+
+┌─ Memory Consumption (MB) — Mean (CV%)
+
+Operation                                 rawsql          prisma         typeorm       sequelize         drizzle
+----------------------------------------------------------------------------------------------------------------
+C1: Create User                     25.21 (0.1%)    25.31 (0.1%)    25.79 (0.5%)    26.06 (0.3%)    26.22 (0.2%)
+C2: Create Post                     26.26 (0.0%)    26.29 (0.0%)    26.46 (0.0%)    26.48 (0.1%)    26.54 (0.0%)
+C3: Bulk Insert Posts (10)          26.69 (0.0%)    26.70 (0.0%)    26.96 (0.1%)    27.06 (0.2%)    27.15 (0.1%)
+R1: Get User By ID                  27.16 (0.0%)    27.21 (0.0%)    27.44 (0.4%)    27.56 (0.2%)    27.66 (0.1%)
+R2: Get Post By ID                  27.64 (0.0%)    27.65 (0.0%)    27.72 (0.0%)    27.73 (0.2%)    27.73 (0.0%)
+R3: Get Paginated Posts             27.75 (0.0%)    27.76 (0.0%)    27.91 (0.0%)    27.93 (0.0%)    27.95 (0.0%)
+U1: Update User                     27.90 (0.0%)    27.91 (0.0%)    28.05 (0.1%)    28.13 (0.1%)    28.14 (0.0%)
+U2: Update Post                     28.11 (0.0%)    28.13 (0.0%)    28.21 (0.0%)    28.24 (0.0%)    28.24 (0.0%)
+D1: Delete User                     28.17 (0.0%)    28.18 (0.0%)    28.26 (0.0%)    28.27 (0.0%)    28.30 (0.0%)
+D2: Bulk Delete Posts by Author     28.26 (0.0%)    28.26 (0.0%)    28.33 (0.0%)    28.31 (0.0%)    28.32 (0.0%)
+J1: Get Post With Author            28.39 (0.0%)    28.42 (0.0%)    28.55 (0.0%)    28.67 (0.2%)    28.67 (0.0%)
+M1: Create Post With Categories     28.68 (0.0%)    28.68 (0.0%)    29.20 (0.1%)    29.00 (0.0%)    28.92 (0.0%)
+M2: Get Post With Categories        28.83 (0.0%)    28.86 (0.0%)    28.95 (0.0%)    29.02 (0.0%)    29.01 (0.0%)
+
+┌─ Detailed Memory Stats (MB)
+
+
+  C1: Create User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            25.212    25.192    25.339     0.029      0.12
+  prisma            25.315    25.247    25.337     0.029      0.12
+  typeorm           25.791    25.551    26.040     0.121      0.47
+  sequelize         26.058    25.868    26.110     0.066      0.25
+  drizzle           26.224    26.125    26.418     0.051      0.20
+
+  C2: Create Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            26.263    26.244    26.275     0.010      0.04
+  prisma            26.288    26.286    26.290     0.001      0.00
+  typeorm           26.461    26.444    26.479     0.009      0.04
+  sequelize         26.478    26.439    26.512     0.025      0.10
+  drizzle           26.545    26.529    26.561     0.012      0.05
+
+  C3: Bulk Insert Posts (10)
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            26.691    26.683    26.708     0.007      0.03
+  prisma            26.699    26.696    26.702     0.002      0.01
+  typeorm           26.963    26.931    26.976     0.014      0.05
+  sequelize         27.063    26.957    27.111     0.048      0.18
+  drizzle           27.150    27.103    27.166     0.014      0.05
+
+  R1: Get User By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            27.163    27.158    27.171     0.005      0.02
+  prisma            27.210    27.199    27.212     0.003      0.01
+  typeorm           27.444    27.281    27.695     0.108      0.40
+  sequelize         27.556    27.467    27.593     0.044      0.16
+  drizzle           27.660    27.634    27.671     0.015      0.05
+
+  R2: Get Post By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            27.645    27.643    27.656     0.003      0.01
+  prisma            27.651    27.650    27.653     0.001      0.00
+  typeorm           27.724    27.722    27.730     0.002      0.01
+  sequelize         27.734    27.718    27.998     0.061      0.22
+  drizzle           27.727    27.723    27.734     0.002      0.01
+
+  R3: Get Paginated Posts
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            27.750    27.745    27.756     0.004      0.01
+  prisma            27.759    27.746    27.761     0.003      0.01
+  typeorm           27.909    27.895    27.918     0.007      0.02
+  sequelize         27.925    27.879    27.935     0.013      0.05
+  drizzle           27.950    27.941    27.964     0.006      0.02
+
+  U1: Update User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            27.903    27.897    27.905     0.002      0.01
+  prisma            27.910    27.909    27.912     0.001      0.00
+  typeorm           28.050    27.986    28.071     0.030      0.11
+  sequelize         28.133    28.099    28.146     0.017      0.06
+  drizzle           28.137    28.117    28.145     0.011      0.04
+
+  U2: Update Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.109    28.108    28.119     0.002      0.01
+  prisma            28.131    28.129    28.133     0.001      0.00
+  typeorm           28.208    28.208    28.209     0.000      0.00
+  sequelize         28.237    28.220    28.246     0.010      0.04
+  drizzle           28.239    28.232    28.242     0.004      0.01
+
+  D1: Delete User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.175    28.174    28.177     0.001      0.00
+  prisma            28.182    28.181    28.184     0.001      0.00
+  typeorm           28.260    28.246    28.272     0.011      0.04
+  sequelize         28.271    28.252    28.283     0.013      0.04
+  drizzle           28.296    28.290    28.305     0.004      0.02
+
+  D2: Bulk Delete Posts by Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.258    28.257    28.258     0.000      0.00
+  prisma            28.259    28.258    28.262     0.001      0.00
+  typeorm           28.333    28.327    28.335     0.003      0.01
+  sequelize         28.307    28.306    28.310     0.001      0.00
+  drizzle           28.319    28.319    28.322     0.001      0.00
+
+  J1: Get Post With Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.395    28.391    28.406     0.004      0.01
+  prisma            28.424    28.411    28.429     0.004      0.01
+  typeorm           28.546    28.517    28.564     0.012      0.04
+  sequelize         28.672    28.619    28.793     0.044      0.15
+  drizzle           28.667    28.657    28.678     0.007      0.02
+
+  M1: Create Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.677    28.669    28.711     0.008      0.03
+  prisma            28.683    28.680    28.687     0.002      0.01
+  typeorm           29.200    29.152    29.222     0.023      0.08
+  sequelize         28.995    28.974    29.007     0.011      0.04
+  drizzle           28.920    28.909    28.931     0.007      0.02
+
+  M2: Get Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.831    28.830    28.839     0.002      0.01
+  prisma            28.855    28.855    28.856     0.001      0.00
+  typeorm           28.950    28.940    28.953     0.003      0.01
+  sequelize         29.024    28.999    29.047     0.014      0.05
+  drizzle           29.011    29.005    29.017     0.005      0.02
+
+┌─ Overhead % vs Raw SQL (based on mean execution time)
+
+  prisma:
+    C1 (Create User)                       9.03%
+    C2 (Create Post)                       12.49%
+    C3 (Bulk Insert Posts (10))            46.90%
+    R1 (Get User By ID)                    27.82%
+    R2 (Get Post By ID)                    35.54%
+    R3 (Get Paginated Posts)               17.80%
+    U1 (Update User)                       24.40%
+    U2 (Update Post)                       9.14%
+    D1 (Delete User)                       16.97%
+    D2 (Bulk Delete Posts by Author)       25.62%
+    J1 (Get Post With Author)              71.09%
+    M1 (Create Post With Categories)       42.84%
+    M2 (Get Post With Categories)          42.11%
+  typeorm:
+    C1 (Create User)                       121.49%
+    C2 (Create Post)                       101.99%
+    C3 (Bulk Insert Posts (10))            32.41%
+    R1 (Get User By ID)                    39.67%
+    R2 (Get Post By ID)                    174.36%
+    R3 (Get Paginated Posts)               41.06%
+    U1 (Update User)                       36.45%
+    U2 (Update Post)                       24.67%
+    D1 (Delete User)                       26.03%
+    D2 (Bulk Delete Posts by Author)       40.41%
+    J1 (Get Post With Author)              69.92%
+    M1 (Create Post With Categories)       198.29%
+    M2 (Get Post With Categories)          48.91%
+  sequelize:
+    C1 (Create User)                       40.41%
+    C2 (Create Post)                       42.66%
+    C3 (Bulk Insert Posts (10))            41.68%
+    R1 (Get User By ID)                    26.52%
+    R2 (Get Post By ID)                    39.82%
+    R3 (Get Paginated Posts)               67.23%
+    U1 (Update User)                       32.88%
+    U2 (Update Post)                       11.23%
+    D1 (Delete User)                       9.11%
+    D2 (Bulk Delete Posts by Author)       16.15%
+    J1 (Get Post With Author)              49.77%
+    M1 (Create Post With Categories)       62.58%
+    M2 (Get Post With Categories)          65.82%
+  drizzle:
+    C1 (Create User)                       41.41%
+    C2 (Create Post)                       43.20%
+    C3 (Bulk Insert Posts (10))            51.23%
+    R1 (Get User By ID)                    61.74%
+    R2 (Get Post By ID)                    83.63%
+    R3 (Get Paginated Posts)               66.16%
+    U1 (Update User)                       54.58%
+    U2 (Update Post)                       32.34%
+    D1 (Delete User)                       48.06%
+    D2 (Bulk Delete Posts by Author)       90.05%
+    J1 (Get Post With Author)              61.30%
+    M1 (Create Post With Categories)       55.64%
+    M2 (Get Post With Categories)          65.29%
+
+┌─ Stability Report (CV% < 15% = stable)
+
+  rawsql: 9 unstable
+    C1 (Create User)                       CV=15.66% [UNSTABLE]
+    C2 (Create Post)                       CV=14.08% [OK]
+    C3 (Bulk Insert Posts (10))            CV=16.15% [UNSTABLE]
+    R1 (Get User By ID)                    CV=16.61% [UNSTABLE]
+    R2 (Get Post By ID)                    CV=15.69% [UNSTABLE]
+    R3 (Get Paginated Posts)               CV=16.29% [UNSTABLE]
+    U1 (Update User)                       CV=10.46% [OK]
+    U2 (Update Post)                       CV=51.29% [UNSTABLE]
+    D1 (Delete User)                       CV=18.90% [UNSTABLE]
+    D2 (Bulk Delete Posts by Author)       CV=13.22% [OK]
+    J1 (Get Post With Author)              CV=16.62% [UNSTABLE]
+    M1 (Create Post With Categories)       CV=11.17% [OK]
+    M2 (Get Post With Categories)          CV=15.51% [UNSTABLE]
+  prisma: 4 unstable
+    C1 (Create User)                       CV=13.51% [OK]
+    C2 (Create Post)                       CV=11.82% [OK]
+    C3 (Bulk Insert Posts (10))            CV=12.99% [OK]
+    R1 (Get User By ID)                    CV=18.80% [UNSTABLE]
+    R2 (Get Post By ID)                    CV=12.77% [OK]
+    R3 (Get Paginated Posts)               CV=13.47% [OK]
+    U1 (Update User)                       CV=14.41% [OK]
+    U2 (Update Post)                       CV=17.69% [UNSTABLE]
+    D1 (Delete User)                       CV=18.86% [UNSTABLE]
+    D2 (Bulk Delete Posts by Author)       CV=19.83% [UNSTABLE]
+    J1 (Get Post With Author)              CV=11.43% [OK]
+    M1 (Create Post With Categories)       CV=10.50% [OK]
+    M2 (Get Post With Categories)          CV=11.80% [OK]
+  typeorm: 4 unstable
+    C1 (Create User)                       CV=37.59% [UNSTABLE]
+    C2 (Create Post)                       CV=11.67% [OK]
+    C3 (Bulk Insert Posts (10))            CV=13.47% [OK]
+    R1 (Get User By ID)                    CV=12.24% [OK]
+    R2 (Get Post By ID)                    CV=193.56% [UNSTABLE]
+    R3 (Get Paginated Posts)               CV=12.85% [OK]
+    U1 (Update User)                       CV=13.50% [OK]
+    U2 (Update Post)                       CV=25.65% [UNSTABLE]
+    D1 (Delete User)                       CV=13.67% [OK]
+    D2 (Bulk Delete Posts by Author)       CV=14.08% [OK]
+    J1 (Get Post With Author)              CV=19.12% [UNSTABLE]
+    M1 (Create Post With Categories)       CV=11.96% [OK]
+    M2 (Get Post With Categories)          CV=13.35% [OK]
+  sequelize: 5 unstable
+    C1 (Create User)                       CV=11.59% [OK]
+    C2 (Create Post)                       CV=17.69% [UNSTABLE]
+    C3 (Bulk Insert Posts (10))            CV=23.04% [UNSTABLE]
+    R1 (Get User By ID)                    CV=9.17% [OK]
+    R2 (Get Post By ID)                    CV=14.98% [OK]
+    R3 (Get Paginated Posts)               CV=97.82% [UNSTABLE]
+    U1 (Update User)                       CV=14.35% [OK]
+    U2 (Update Post)                       CV=10.31% [OK]
+    D1 (Delete User)                       CV=12.85% [OK]
+    D2 (Bulk Delete Posts by Author)       CV=15.07% [UNSTABLE]
+    J1 (Get Post With Author)              CV=11.06% [OK]
+    M1 (Create Post With Categories)       CV=9.79% [OK]
+    M2 (Get Post With Categories)          CV=48.69% [UNSTABLE]
+  drizzle: 3 unstable
+    C1 (Create User)                       CV=10.34% [OK]
+    C2 (Create Post)                       CV=11.55% [OK]
+    C3 (Bulk Insert Posts (10))            CV=12.62% [OK]
+    R1 (Get User By ID)                    CV=7.82% [OK]
+    R2 (Get Post By ID)                    CV=9.90% [OK]
+    R3 (Get Paginated Posts)               CV=10.63% [OK]
+    U1 (Update User)                       CV=10.77% [OK]
+    U2 (Update Post)                       CV=10.70% [OK]
+    D1 (Delete User)                       CV=17.16% [UNSTABLE]
+    D2 (Bulk Delete Posts by Author)       CV=14.22% [OK]
+    J1 (Get Post With Author)              CV=13.22% [OK]
+    M1 (Create Post With Categories)       CV=18.62% [UNSTABLE]
+    M2 (Get Post With Categories)          CV=16.00% [UNSTABLE]
+
+================================================================================
+Dataset Size: 1000
+================================================================================
+
+┌─ Execution Time (ms) — Mean (CV%)
+
+Operation                                 rawsql          prisma         typeorm       sequelize         drizzle
+----------------------------------------------------------------------------------------------------------------
+C1: Create User                    3.000 (12.3%)   3.273 (14.1%)   6.085 (10.0%)    3.794 (9.2%)   4.324 (11.6%)
+C2: Create Post                    3.128 (15.3%)   3.560 (14.8%)   6.499 (17.2%)    3.859 (8.3%)   4.410 (10.2%)
+C3: Bulk Insert Posts (10)         5.036 (93.5%)   6.734 (22.4%)   5.324 (17.5%)   5.356 (17.1%)   5.883 (29.2%)
+R1: Get User By ID                 2.101 (66.3%)   2.383 (11.4%)   2.629 (11.5%)   3.056 (43.8%)   3.384 (16.1%)
+R2: Get Post By ID                3.010 (177.4%)   2.445 (14.1%)   2.743 (10.7%)    2.434 (8.7%)   3.042 (12.8%)
+R3: Get Paginated Posts           2.998 (151.7%)   2.530 (14.2%)   3.230 (28.0%)   2.586 (15.0%)    3.320 (9.2%)
+U1: Update User                    2.810 (12.7%)   3.497 (18.3%)   3.763 (12.9%)   3.801 (12.7%)   4.298 (10.2%)
+U2: Update Post                    3.028 (22.8%)   3.512 (13.3%)   4.503 (57.0%)    3.710 (9.2%)   4.512 (12.2%)
+D1: Delete User                    2.957 (10.3%)   4.300 (23.8%) 11.927 (118.2%)   4.630 (19.5%)   5.507 (69.1%)
+D2: Bulk Delete Posts by Author    1.894 (27.8%)   2.023 (17.7%)   2.518 (11.6%)   2.226 (17.2%)   3.081 (12.3%)
+J1: Get Post With Author           2.082 (26.3%)   3.352 (11.1%)   3.226 (13.2%)   3.761 (26.2%)   3.475 (10.8%)
+M1: Create Post With Categories    5.050 (16.4%)   6.616 (10.0%)   15.415 (7.9%)   8.000 (11.9%)   7.892 (10.2%)
+M2: Get Post With Categories       2.189 (10.8%)   3.283 (10.8%)   3.297 (23.1%)   3.330 (12.6%)   3.779 (11.7%)
+
+┌─ Detailed Execution Time Stats (ms)
+
+
+  C1: Create User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.000     2.404     3.738     0.369     12.30
+  prisma             3.273     2.618     4.596     0.462     14.12
+  typeorm            6.085     5.059     7.316     0.611     10.04
+  sequelize          3.794     3.211     4.731     0.348      9.17
+  drizzle            4.324     3.521     5.219     0.500     11.56
+
+  C2: Create Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.128     2.479     4.057     0.479     15.31
+  prisma             3.560     2.763     4.580     0.528     14.84
+  typeorm            6.499     5.274     9.426     1.118     17.20
+  sequelize          3.859     3.318     4.519     0.319      8.27
+  drizzle            4.410     3.460     5.115     0.450     10.20
+
+  C3: Bulk Insert Posts (10)
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             5.036     2.664    22.167     4.709     93.52
+  prisma             6.734     4.966     9.274     1.510     22.43
+  typeorm            5.324     4.157     8.234     0.933     17.51
+  sequelize          5.356     4.360     7.605     0.914     17.07
+  drizzle            5.883     4.424    10.665     1.717     29.18
+
+  R1: Get User By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.101     1.404     8.061     1.392     66.27
+  prisma             2.383     1.974     2.980     0.271     11.37
+  typeorm            2.629     2.224     3.381     0.301     11.45
+  sequelize          3.056     2.191     7.365     1.338     43.78
+  drizzle            3.384     2.607     4.925     0.544     16.07
+
+  R2: Get Post By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.010     1.402    26.262     5.339    177.37
+  prisma             2.445     1.977     3.242     0.345     14.11
+  typeorm            2.743     2.182     3.335     0.292     10.65
+  sequelize          2.434     1.964     2.765     0.213      8.73
+  drizzle            3.042     2.575     3.871     0.390     12.82
+
+  R3: Get Paginated Posts
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.998     1.488    22.782     4.548    151.71
+  prisma             2.530     1.971     3.612     0.359     14.19
+  typeorm            3.230     2.587     6.716     0.904     27.98
+  sequelize          2.586     2.139     3.415     0.388     15.02
+  drizzle            3.320     2.775     4.044     0.306      9.21
+
+  U1: Update User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.810     2.215     3.656     0.357     12.70
+  prisma             3.497     2.755     5.992     0.640     18.31
+  typeorm            3.763     2.888     4.658     0.486     12.91
+  sequelize          3.801     3.031     4.825     0.481     12.66
+  drizzle            4.298     3.324     5.103     0.440     10.23
+
+  U2: Update Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.028     2.293     4.943     0.690     22.78
+  prisma             3.512     2.825     4.578     0.467     13.29
+  typeorm            4.503     3.180    15.444     2.565     56.96
+  sequelize          3.710     3.041     4.298     0.341      9.19
+  drizzle            4.512     3.643     5.713     0.548     12.15
+
+  D1: Delete User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.957     2.542     3.731     0.304     10.28
+  prisma             4.300     2.982     6.212     1.023     23.80
+  typeorm           11.927     3.454    60.962    14.096    118.18
+  sequelize          4.630     3.217     6.650     0.902     19.47
+  drizzle            5.507     3.754    21.250     3.804     69.08
+
+  D2: Bulk Delete Posts by Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             1.894     1.394     3.597     0.526     27.76
+  prisma             2.023     1.595     2.893     0.357     17.66
+  typeorm            2.518     2.161     3.209     0.293     11.62
+  sequelize          2.226     1.763     3.104     0.384     17.23
+  drizzle            3.081     2.653     4.028     0.378     12.28
+
+  J1: Get Post With Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.082     1.498     3.378     0.547     26.26
+  prisma             3.352     2.746     3.976     0.372     11.10
+  typeorm            3.226     2.671     3.994     0.425     13.17
+  sequelize          3.761     2.917     6.181     0.984     26.15
+  drizzle            3.475     2.955     4.540     0.374     10.76
+
+  M1: Create Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             5.050     4.153     7.882     0.831     16.45
+  prisma             6.616     5.389     7.750     0.662     10.00
+  typeorm           15.415    13.350    18.031     1.219      7.91
+  sequelize          8.000     6.640     9.740     0.948     11.85
+  drizzle            7.892     6.564    10.296     0.804     10.19
+
+  M2: Get Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.189     1.683     2.723     0.236     10.79
+  prisma             3.283     2.627     3.790     0.354     10.77
+  typeorm            3.297     2.790     6.353     0.762     23.11
+  sequelize          3.330     2.832     4.233     0.421     12.64
+  drizzle            3.779     3.142     4.683     0.444     11.75
+
+┌─ Memory Consumption (MB) — Mean (CV%)
+
+Operation                                 rawsql          prisma         typeorm       sequelize         drizzle
+----------------------------------------------------------------------------------------------------------------
+C1: Create User                     28.92 (0.0%)    28.93 (0.0%)    29.05 (0.0%)    29.02 (0.0%)    28.99 (0.0%)
+C2: Create Post                     28.95 (0.0%)    28.96 (0.0%)    29.10 (0.0%)    29.06 (0.0%)    29.04 (0.0%)
+C3: Bulk Insert Posts (10)          29.02 (0.0%)    29.01 (0.0%)    29.24 (0.0%)    29.24 (0.1%)    29.25 (0.0%)
+R1: Get User By ID                  29.05 (0.0%)    29.06 (0.0%)    29.12 (0.0%)    29.11 (0.0%)    29.11 (0.0%)
+R2: Get Post By ID                  29.05 (0.0%)    29.07 (0.0%)    29.14 (0.0%)    29.12 (0.0%)    29.14 (0.0%)
+R3: Get Paginated Posts             29.11 (0.0%)    29.11 (0.0%)    29.24 (0.0%)    29.21 (0.0%)    29.21 (0.0%)
+U1: Update User                     29.10 (0.0%)    29.10 (0.0%)    29.16 (0.0%)    29.20 (0.1%)    29.19 (0.0%)
+U2: Update Post                     29.16 (0.0%)    29.17 (0.0%)    29.24 (0.0%)    29.27 (0.0%)    29.26 (0.0%)
+D1: Delete User                     29.20 (0.0%)    29.22 (0.0%)    29.28 (0.0%)    29.25 (0.0%)    29.30 (0.1%)
+D2: Bulk Delete Posts by Author     29.29 (0.0%)    29.31 (0.0%)    29.39 (0.0%)    29.36 (0.0%)    29.37 (0.0%)
+J1: Get Post With Author            29.35 (0.0%)    29.37 (0.0%)    29.46 (0.0%)    29.50 (0.0%)    29.48 (0.0%)
+M1: Create Post With Categories     29.41 (0.0%)    29.42 (0.0%)    29.88 (0.0%)    29.64 (0.0%)    29.54 (0.0%)
+M2: Get Post With Categories        29.42 (0.0%)    29.45 (0.0%)    29.53 (0.0%)    29.58 (0.0%)    29.54 (0.0%)
+
+┌─ Detailed Memory Stats (MB)
+
+
+  C1: Create User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.925    28.915    28.936     0.005      0.02
+  prisma            28.933    28.933    28.934     0.000      0.00
+  typeorm           29.051    29.050    29.054     0.001      0.00
+  sequelize         29.018    29.011    29.022     0.003      0.01
+  drizzle           28.992    28.991    28.994     0.001      0.00
+
+  C2: Create Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.945    28.941    28.950     0.003      0.01
+  prisma            28.964    28.963    28.967     0.001      0.00
+  typeorm           29.098    29.095    29.104     0.003      0.01
+  sequelize         29.057    29.053    29.061     0.002      0.01
+  drizzle           29.039    29.039    29.042     0.001      0.00
+
+  C3: Bulk Insert Posts (10)
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.024    29.021    29.046     0.006      0.02
+  prisma            29.014    29.012    29.019     0.002      0.01
+  typeorm           29.240    29.234    29.244     0.002      0.01
+  sequelize         29.238    29.213    29.310     0.020      0.07
+  drizzle           29.245    29.239    29.247     0.002      0.01
+
+  R1: Get User By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.052    29.051    29.062     0.002      0.01
+  prisma            29.063    29.061    29.063     0.000      0.00
+  typeorm           29.123    29.121    29.124     0.001      0.00
+  sequelize         29.111    29.111    29.116     0.001      0.00
+  drizzle           29.110    29.107    29.110     0.001      0.00
+
+  R2: Get Post By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.053    29.052    29.060     0.002      0.01
+  prisma            29.071    29.064    29.078     0.004      0.01
+  typeorm           29.141    29.141    29.142     0.000      0.00
+  sequelize         29.122    29.121    29.132     0.003      0.01
+  drizzle           29.136    29.136    29.139     0.001      0.00
+
+  R3: Get Paginated Posts
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.109    29.108    29.119     0.002      0.01
+  prisma            29.108    29.101    29.109     0.002      0.01
+  typeorm           29.238    29.233    29.243     0.002      0.01
+  sequelize         29.210    29.201    29.211     0.002      0.01
+  drizzle           29.209    29.208    29.211     0.001      0.00
+
+  U1: Update User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.098    29.097    29.104     0.001      0.00
+  prisma            29.104    29.103    29.105     0.001      0.00
+  typeorm           29.165    29.164    29.166     0.000      0.00
+  sequelize         29.199    29.180    29.216     0.015      0.05
+  drizzle           29.186    29.185    29.189     0.001      0.00
+
+  U2: Update Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.157    29.157    29.164     0.001      0.01
+  prisma            29.171    29.171    29.172     0.000      0.00
+  typeorm           29.241    29.235    29.249     0.005      0.02
+  sequelize         29.269    29.264    29.272     0.002      0.01
+  drizzle           29.264    29.254    29.271     0.007      0.02
+
+  D1: Delete User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.203    29.203    29.205     0.001      0.00
+  prisma            29.216    29.209    29.230     0.007      0.03
+  typeorm           29.284    29.281    29.296     0.004      0.01
+  sequelize         29.249    29.248    29.252     0.001      0.00
+  drizzle           29.297    29.253    29.332     0.038      0.13
+
+  D2: Bulk Delete Posts by Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.290    29.290    29.291     0.000      0.00
+  prisma            29.311    29.304    29.321     0.007      0.02
+  typeorm           29.390    29.389    29.393     0.001      0.00
+  sequelize         29.363    29.363    29.367     0.001      0.00
+  drizzle           29.373    29.372    29.375     0.001      0.00
+
+  J1: Get Post With Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.345    29.343    29.363     0.004      0.02
+  prisma            29.369    29.369    29.370     0.000      0.00
+  typeorm           29.461    29.456    29.463     0.002      0.01
+  sequelize         29.501    29.490    29.520     0.010      0.04
+  drizzle           29.483    29.482    29.491     0.002      0.01
+
+  M1: Create Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.415    29.413    29.437     0.005      0.02
+  prisma            29.417    29.417    29.418     0.000      0.00
+  typeorm           29.876    29.873    29.881     0.002      0.01
+  sequelize         29.635    29.633    29.658     0.005      0.02
+  drizzle           29.535    29.534    29.537     0.001      0.00
+
+  M2: Get Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.419    29.419    29.428     0.002      0.01
+  prisma            29.448    29.444    29.449     0.002      0.01
+  typeorm           29.532    29.531    29.532     0.000      0.00
+  sequelize         29.577    29.572    29.591     0.004      0.01
+  drizzle           29.542    29.541    29.555     0.003      0.01
+
+┌─ Overhead % vs Raw SQL (based on mean execution time)
+
+  prisma:
+    C1 (Create User)                       9.07%
+    C2 (Create Post)                       13.82%
+    C3 (Bulk Insert Posts (10))            33.73%
+    R1 (Get User By ID)                    13.44%
+    R2 (Get Post By ID)                    -18.77%
+    R3 (Get Paginated Posts)               -15.60%
+    U1 (Update User)                       24.46%
+    U2 (Update Post)                       15.98%
+    D1 (Delete User)                       45.41%
+    D2 (Bulk Delete Posts by Author)       6.81%
+    J1 (Get Post With Author)              61.04%
+    M1 (Create Post With Categories)       31.01%
+    M2 (Get Post With Categories)          49.95%
+  typeorm:
+    C1 (Create User)                       102.81%
+    C2 (Create Post)                       107.77%
+    C3 (Bulk Insert Posts (10))            5.74%
+    R1 (Get User By ID)                    25.11%
+    R2 (Get Post By ID)                    -8.88%
+    R3 (Get Paginated Posts)               7.75%
+    U1 (Update User)                       33.92%
+    U2 (Update Post)                       48.69%
+    D1 (Delete User)                       303.31%
+    D2 (Bulk Delete Posts by Author)       32.94%
+    J1 (Get Post With Author)              54.98%
+    M1 (Create Post With Categories)       205.24%
+    M2 (Get Post With Categories)          50.60%
+  sequelize:
+    C1 (Create User)                       26.45%
+    C2 (Create Post)                       23.38%
+    C3 (Bulk Insert Posts (10))            6.36%
+    R1 (Get User By ID)                    45.45%
+    R2 (Get Post By ID)                    -19.14%
+    R3 (Get Paginated Posts)               -13.74%
+    U1 (Update User)                       35.29%
+    U2 (Update Post)                       22.49%
+    D1 (Delete User)                       56.58%
+    D2 (Bulk Delete Posts by Author)       17.53%
+    J1 (Get Post With Author)              80.67%
+    M1 (Create Post With Categories)       58.41%
+    M2 (Get Post With Categories)          52.11%
+  drizzle:
+    C1 (Create User)                       44.10%
+    C2 (Create Post)                       41.01%
+    C3 (Bulk Insert Posts (10))            16.82%
+    R1 (Get User By ID)                    61.07%
+    R2 (Get Post By ID)                    1.06%
+    R3 (Get Paginated Posts)               10.75%
+    U1 (Update User)                       52.97%
+    U2 (Update Post)                       48.99%
+    D1 (Delete User)                       86.21%
+    D2 (Bulk Delete Posts by Author)       62.63%
+    J1 (Get Post With Author)              66.92%
+    M1 (Create Post With Categories)       56.27%
+    M2 (Get Post With Categories)          72.59%
+
+┌─ Stability Report (CV% < 15% = stable)
+
+  rawsql: 9 unstable
+    C1 (Create User)                       CV=12.30% [OK]
+    C2 (Create Post)                       CV=15.31% [UNSTABLE]
+    C3 (Bulk Insert Posts (10))            CV=93.52% [UNSTABLE]
+    R1 (Get User By ID)                    CV=66.27% [UNSTABLE]
+    R2 (Get Post By ID)                    CV=177.37% [UNSTABLE]
+    R3 (Get Paginated Posts)               CV=151.71% [UNSTABLE]
+    U1 (Update User)                       CV=12.70% [OK]
+    U2 (Update Post)                       CV=22.78% [UNSTABLE]
+    D1 (Delete User)                       CV=10.28% [OK]
+    D2 (Bulk Delete Posts by Author)       CV=27.76% [UNSTABLE]
+    J1 (Get Post With Author)              CV=26.26% [UNSTABLE]
+    M1 (Create Post With Categories)       CV=16.45% [UNSTABLE]
+    M2 (Get Post With Categories)          CV=10.79% [OK]
+  prisma: 4 unstable
+    C1 (Create User)                       CV=14.12% [OK]
+    C2 (Create Post)                       CV=14.84% [OK]
+    C3 (Bulk Insert Posts (10))            CV=22.43% [UNSTABLE]
+    R1 (Get User By ID)                    CV=11.37% [OK]
+    R2 (Get Post By ID)                    CV=14.11% [OK]
+    R3 (Get Paginated Posts)               CV=14.19% [OK]
+    U1 (Update User)                       CV=18.31% [UNSTABLE]
+    U2 (Update Post)                       CV=13.29% [OK]
+    D1 (Delete User)                       CV=23.80% [UNSTABLE]
+    D2 (Bulk Delete Posts by Author)       CV=17.66% [UNSTABLE]
+    J1 (Get Post With Author)              CV=11.10% [OK]
+    M1 (Create Post With Categories)       CV=10.00% [OK]
+    M2 (Get Post With Categories)          CV=10.77% [OK]
+  typeorm: 6 unstable
+    C1 (Create User)                       CV=10.04% [OK]
+    C2 (Create Post)                       CV=17.20% [UNSTABLE]
+    C3 (Bulk Insert Posts (10))            CV=17.51% [UNSTABLE]
+    R1 (Get User By ID)                    CV=11.45% [OK]
+    R2 (Get Post By ID)                    CV=10.65% [OK]
+    R3 (Get Paginated Posts)               CV=27.98% [UNSTABLE]
+    U1 (Update User)                       CV=12.91% [OK]
+    U2 (Update Post)                       CV=56.96% [UNSTABLE]
+    D1 (Delete User)                       CV=118.18% [UNSTABLE]
+    D2 (Bulk Delete Posts by Author)       CV=11.62% [OK]
+    J1 (Get Post With Author)              CV=13.17% [OK]
+    M1 (Create Post With Categories)       CV=7.91% [OK]
+    M2 (Get Post With Categories)          CV=23.11% [UNSTABLE]
+  sequelize: 6 unstable
+    C1 (Create User)                       CV=9.17% [OK]
+    C2 (Create Post)                       CV=8.27% [OK]
+    C3 (Bulk Insert Posts (10))            CV=17.07% [UNSTABLE]
+    R1 (Get User By ID)                    CV=43.78% [UNSTABLE]
+    R2 (Get Post By ID)                    CV=8.73% [OK]
+    R3 (Get Paginated Posts)               CV=15.02% [UNSTABLE]
+    U1 (Update User)                       CV=12.66% [OK]
+    U2 (Update Post)                       CV=9.19% [OK]
+    D1 (Delete User)                       CV=19.47% [UNSTABLE]
+    D2 (Bulk Delete Posts by Author)       CV=17.23% [UNSTABLE]
+    J1 (Get Post With Author)              CV=26.15% [UNSTABLE]
+    M1 (Create Post With Categories)       CV=11.85% [OK]
+    M2 (Get Post With Categories)          CV=12.64% [OK]
+  drizzle: 3 unstable
+    C1 (Create User)                       CV=11.56% [OK]
+    C2 (Create Post)                       CV=10.20% [OK]
+    C3 (Bulk Insert Posts (10))            CV=29.18% [UNSTABLE]
+    R1 (Get User By ID)                    CV=16.07% [UNSTABLE]
+    R2 (Get Post By ID)                    CV=12.82% [OK]
+    R3 (Get Paginated Posts)               CV=9.21% [OK]
+    U1 (Update User)                       CV=10.23% [OK]
+    U2 (Update Post)                       CV=12.15% [OK]
+    D1 (Delete User)                       CV=69.08% [UNSTABLE]
+    D2 (Bulk Delete Posts by Author)       CV=12.28% [OK]
+    J1 (Get Post With Author)              CV=10.76% [OK]
+    M1 (Create Post With Categories)       CV=10.19% [OK]
+    M2 (Get Post With Categories)          CV=11.75% [OK]
+
+================================================================================
+Dataset Size: 10000
+================================================================================
+
+┌─ Execution Time (ms) — Mean (CV%)
+
+Operation                                 rawsql          prisma         typeorm       sequelize         drizzle
+----------------------------------------------------------------------------------------------------------------
+C1: Create User                    2.880 (14.5%)   3.319 (14.8%)   6.454 (20.9%)   3.729 (14.0%)   4.120 (10.2%)
+C2: Create Post                     2.942 (8.4%)   3.219 (11.9%)   6.052 (10.5%)   4.107 (12.5%)   4.240 (11.4%)
+C3: Bulk Insert Posts (10)        4.863 (150.7%)   5.150 (14.7%)   4.352 (15.5%)   4.789 (13.7%)   5.307 (11.6%)
+R1: Get User By ID                 1.833 (16.0%)   2.150 (10.8%)   3.265 (89.2%)   2.263 (12.5%)    2.966 (9.0%)
+R2: Get Post By ID                 1.721 (12.7%)   2.297 (16.7%)   3.215 (76.4%)    2.459 (9.7%)   3.011 (15.5%)
+R3: Get Paginated Posts            2.029 (15.4%)   2.363 (13.1%)   2.828 (11.1%)   2.706 (18.8%)   6.535 (48.2%)
+U1: Update User                    2.808 (12.7%)   3.326 (11.3%)   3.854 (16.4%)   3.721 (19.5%)   4.372 (11.0%)
+U2: Update Post                   4.856 (112.3%)   4.045 (39.2%)   3.826 (10.7%)   3.785 (13.6%)   4.179 (12.1%)
+D1: Delete User                    5.112 (23.7%)   4.998 (12.6%)   5.159 (10.5%)   4.561 (10.2%)   5.790 (12.1%)
+D2: Bulk Delete Posts by Author    3.083 (10.6%)   6.060 (98.2%)    3.876 (9.1%)   3.348 (11.4%)   4.574 (14.9%)
+J1: Get Post With Author           1.965 (10.2%)   3.630 (23.8%)   3.050 (10.5%)   2.991 (12.4%)   3.456 (11.3%)
+M1: Create Post With Categories    5.119 (16.7%)   8.422 (91.2%)  15.968 (13.5%)    7.934 (9.6%)   7.245 (11.0%)
+M2: Get Post With Categories       2.176 (15.3%)   3.487 (15.3%)   3.306 (11.8%)   3.255 (10.3%)   3.928 (11.7%)
+
+┌─ Detailed Execution Time Stats (ms)
+
+
+  C1: Create User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.880     2.373     3.899     0.418     14.51
+  prisma             3.319     2.661     4.876     0.491     14.78
+  typeorm            6.454     4.928     9.822     1.351     20.94
+  sequelize          3.729     3.053     5.152     0.520     13.96
+  drizzle            4.120     3.504     5.089     0.420     10.18
+
+  C2: Create Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.942     2.462     3.353     0.248      8.43
+  prisma             3.219     2.722     3.960     0.383     11.91
+  typeorm            6.052     5.028     7.254     0.638     10.54
+  sequelize          4.107     3.380     5.124     0.515     12.55
+  drizzle            4.240     3.321     5.005     0.482     11.36
+
+  C3: Bulk Insert Posts (10)
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             4.863     2.591    36.758     7.329    150.70
+  prisma             5.150     4.120     7.634     0.755     14.66
+  typeorm            4.352     3.362     6.053     0.675     15.50
+  sequelize          4.789     3.883     6.490     0.658     13.73
+  drizzle            5.307     4.324     6.279     0.617     11.62
+
+  R1: Get User By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             1.833     1.379     2.409     0.293     16.00
+  prisma             2.150     1.814     2.807     0.233     10.82
+  typeorm            3.265     2.164    15.885     2.913     89.22
+  sequelize          2.263     1.869     3.041     0.282     12.46
+  drizzle            2.966     2.456     3.394     0.268      9.03
+
+  R2: Get Post By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             1.721     1.441     2.223     0.218     12.67
+  prisma             2.297     1.835     3.291     0.383     16.68
+  typeorm            3.215     2.118    13.857     2.457     76.44
+  sequelize          2.459     2.047     2.806     0.238      9.66
+  drizzle            3.011     2.498     4.206     0.466     15.47
+
+  R3: Get Paginated Posts
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.029     1.529     2.772     0.313     15.42
+  prisma             2.363     1.948     3.107     0.310     13.13
+  typeorm            2.828     2.206     3.667     0.314     11.11
+  sequelize          2.706     2.032     3.918     0.510     18.83
+  drizzle            6.535     2.753    13.320     3.149     48.18
+
+  U1: Update User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.808     2.247     3.634     0.356     12.69
+  prisma             3.326     2.773     4.072     0.375     11.29
+  typeorm            3.854     3.120     5.715     0.634     16.45
+  sequelize          3.721     2.922     6.240     0.726     19.51
+  drizzle            4.372     3.542     5.477     0.481     11.01
+
+  U2: Update Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             4.856     2.325    27.320     5.454    112.32
+  prisma             4.045     2.901    10.381     1.587     39.24
+  typeorm            3.826     3.152     4.661     0.409     10.70
+  sequelize          3.785     2.991     4.726     0.515     13.61
+  drizzle            4.179     3.527     5.118     0.505     12.08
+
+  D1: Delete User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             5.112     3.614     9.387     1.212     23.71
+  prisma             4.998     4.239     6.513     0.629     12.59
+  typeorm            5.159     4.354     6.507     0.541     10.50
+  sequelize          4.561     3.840     5.872     0.467     10.24
+  drizzle            5.790     4.754     7.465     0.703     12.14
+
+  D2: Bulk Delete Posts by Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.083     2.559     3.840     0.326     10.59
+  prisma             6.060     3.058    24.923     5.949     98.16
+  typeorm            3.876     3.207     4.747     0.352      9.07
+  sequelize          3.348     2.748     4.081     0.381     11.38
+  drizzle            4.574     3.594     6.275     0.681     14.88
+
+  J1: Get Post With Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             1.965     1.620     2.333     0.200     10.20
+  prisma             3.630     2.812     6.269     0.864     23.81
+  typeorm            3.050     2.622     4.125     0.319     10.47
+  sequelize          2.991     2.483     3.908     0.372     12.44
+  drizzle            3.456     2.882     4.260     0.389     11.27
+
+  M1: Create Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             5.119     4.011     8.200     0.853     16.66
+  prisma             8.422     5.458    41.739     7.682     91.22
+  typeorm           15.968    12.624    23.861     2.157     13.51
+  sequelize          7.934     6.486     9.597     0.765      9.65
+  drizzle            7.245     6.217     9.529     0.796     10.98
+
+  M2: Get Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.176     1.682     2.904     0.332     15.28
+  prisma             3.487     2.722     5.138     0.534     15.31
+  typeorm            3.306     2.574     4.173     0.392     11.84
+  sequelize          3.255     2.786     3.975     0.337     10.35
+  drizzle            3.928     3.051     4.650     0.460     11.71
+
+┌─ Memory Consumption (MB) — Mean (CV%)
+
+Operation                                 rawsql          prisma         typeorm       sequelize         drizzle
+----------------------------------------------------------------------------------------------------------------
+C1: Create User                     29.47 (0.0%)    29.48 (0.0%)    29.60 (0.0%)    29.56 (0.0%)    29.53 (0.0%)
+C2: Create Post                     29.48 (0.0%)    29.49 (0.0%)    29.63 (0.0%)    29.59 (0.0%)    29.58 (0.0%)
+C3: Bulk Insert Posts (10)          29.53 (0.0%)    29.53 (0.0%)    29.74 (0.0%)    29.71 (0.0%)    29.69 (0.0%)
+R1: Get User By ID                  29.52 (0.0%)    29.53 (0.0%)    29.59 (0.0%)    29.57 (0.0%)    29.57 (0.0%)
+R2: Get Post By ID                  29.52 (0.0%)    29.53 (0.0%)    29.60 (0.0%)    29.58 (0.0%)    29.59 (0.0%)
+R3: Get Paginated Posts             29.56 (0.0%)    29.56 (0.0%)    29.69 (0.0%)    29.67 (0.0%)    29.67 (0.0%)
+U1: Update User                     29.54 (0.0%)    29.55 (0.0%)    29.61 (0.0%)    29.63 (0.0%)    29.61 (0.0%)
+U2: Update Post                     29.57 (0.0%)    29.57 (0.0%)    29.64 (0.0%)    29.65 (0.0%)    29.64 (0.0%)
+D1: Delete User                     29.57 (0.0%)    29.58 (0.0%)    29.63 (0.0%)    29.61 (0.0%)    29.63 (0.0%)
+D2: Bulk Delete Posts by Author     29.59 (0.0%)    29.59 (0.0%)    29.66 (0.0%)    29.63 (0.0%)    29.64 (0.0%)
+J1: Get Post With Author            29.60 (0.0%)    29.62 (0.0%)    29.71 (0.0%)    29.74 (0.0%)    29.71 (0.0%)
+M1: Create Post With Categories     29.63 (0.0%)    29.63 (0.0%)    30.09 (0.0%)    29.86 (0.0%)    29.75 (0.0%)
+M2: Get Post With Categories        29.63 (0.0%)    29.66 (0.0%)    29.74 (0.0%)    29.79 (0.0%)    29.75 (0.0%)
+
+┌─ Detailed Memory Stats (MB)
+
+
+  C1: Create User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.475    29.474    29.496     0.005      0.02
+  prisma            29.481    29.481    29.482     0.000      0.00
+  typeorm           29.597    29.596    29.598     0.000      0.00
+  sequelize         29.558    29.557    29.565     0.002      0.01
+  drizzle           29.534    29.534    29.537     0.001      0.00
+
+  C2: Create Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.483    29.482    29.489     0.002      0.01
+  prisma            29.494    29.492    29.497     0.002      0.01
+  typeorm           29.629    29.628    29.637     0.002      0.01
+  sequelize         29.594    29.589    29.601     0.003      0.01
+  drizzle           29.579    29.579    29.584     0.001      0.00
+
+  C3: Bulk Insert Posts (10)
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.534    29.532    29.547     0.004      0.01
+  prisma            29.528    29.527    29.529     0.000      0.00
+  typeorm           29.737    29.735    29.739     0.001      0.00
+  sequelize         29.711    29.710    29.714     0.001      0.00
+  drizzle           29.693    29.689    29.696     0.002      0.01
+
+  R1: Get User By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.515    29.515    29.522     0.002      0.01
+  prisma            29.527    29.526    29.529     0.001      0.00
+  typeorm           29.586    29.586    29.587     0.000      0.00
+  sequelize         29.575    29.574    29.585     0.002      0.01
+  drizzle           29.567    29.566    29.574     0.002      0.01
+
+  R2: Get Post By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.522    29.522    29.529     0.002      0.01
+  prisma            29.530    29.529    29.541     0.002      0.01
+  typeorm           29.597    29.597    29.598     0.000      0.00
+  sequelize         29.582    29.581    29.584     0.001      0.00
+  drizzle           29.585    29.585    29.588     0.001      0.00
+
+  R3: Get Paginated Posts
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.558    29.558    29.562     0.001      0.00
+  prisma            29.558    29.550    29.559     0.002      0.01
+  typeorm           29.687    29.683    29.688     0.001      0.00
+  sequelize         29.666    29.649    29.672     0.006      0.02
+  drizzle           29.667    29.656    29.670     0.005      0.02
+
+  U1: Update User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.545    29.544    29.551     0.001      0.00
+  prisma            29.550    29.550    29.551     0.000      0.00
+  typeorm           29.610    29.610    29.611     0.000      0.00
+  sequelize         29.631    29.626    29.644     0.007      0.02
+  drizzle           29.614    29.612    29.616     0.001      0.00
+
+  U2: Update Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.567    29.566    29.575     0.002      0.01
+  prisma            29.574    29.574    29.575     0.000      0.00
+  typeorm           29.639    29.639    29.640     0.000      0.00
+  sequelize         29.654    29.651    29.656     0.001      0.00
+  drizzle           29.636    29.635    29.638     0.001      0.00
+
+  D1: Delete User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.571    29.571    29.572     0.000      0.00
+  prisma            29.577    29.577    29.578     0.000      0.00
+  typeorm           29.632    29.631    29.633     0.000      0.00
+  sequelize         29.611    29.606    29.630     0.009      0.03
+  drizzle           29.633    29.632    29.635     0.001      0.00
+
+  D2: Bulk Delete Posts by Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.592    29.592    29.593     0.000      0.00
+  prisma            29.593    29.592    29.595     0.001      0.00
+  typeorm           29.657    29.656    29.661     0.001      0.00
+  sequelize         29.632    29.630    29.634     0.001      0.00
+  drizzle           29.641    29.640    29.644     0.001      0.00
+
+  J1: Get Post With Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.601    29.601    29.609     0.002      0.01
+  prisma            29.623    29.622    29.624     0.000      0.00
+  typeorm           29.710    29.710    29.711     0.000      0.00
+  sequelize         29.741    29.737    29.751     0.005      0.02
+  drizzle           29.708    29.708    29.711     0.001      0.00
+
+  M1: Create Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.631    29.628    29.656     0.006      0.02
+  prisma            29.632    29.632    29.633     0.000      0.00
+  typeorm           30.092    30.086    30.100     0.005      0.02
+  sequelize         29.856    29.853    29.878     0.006      0.02
+  drizzle           29.751    29.749    29.773     0.005      0.02
+
+  M2: Get Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.633    29.632    29.641     0.003      0.01
+  prisma            29.662    29.662    29.662     0.000      0.00
+  typeorm           29.745    29.744    29.745     0.000      0.00
+  sequelize         29.786    29.785    29.803     0.004      0.01
+  drizzle           29.745    29.737    29.757     0.005      0.02
+
+┌─ Overhead % vs Raw SQL (based on mean execution time)
+
+  prisma:
+    C1 (Create User)                       15.24%
+    C2 (Create Post)                       9.40%
+    C3 (Bulk Insert Posts (10))            5.90%
+    R1 (Get User By ID)                    17.34%
+    R2 (Get Post By ID)                    33.48%
+    R3 (Get Paginated Posts)               16.45%
+    U1 (Update User)                       18.44%
+    U2 (Update Post)                       -16.70%
+    D1 (Delete User)                       -2.21%
+    D2 (Bulk Delete Posts by Author)       96.53%
+    J1 (Get Post With Author)              84.78%
+    M1 (Create Post With Categories)       64.52%
+    M2 (Get Post With Categories)          60.21%
+  typeorm:
+    C1 (Create User)                       124.07%
+    C2 (Create Post)                       105.68%
+    C3 (Bulk Insert Posts (10))            -10.51%
+    R1 (Get User By ID)                    78.17%
+    R2 (Get Post By ID)                    86.82%
+    R3 (Get Paginated Posts)               39.38%
+    U1 (Update User)                       37.24%
+    U2 (Update Post)                       -21.20%
+    D1 (Delete User)                       0.94%
+    D2 (Bulk Delete Posts by Author)       25.70%
+    J1 (Get Post With Author)              55.24%
+    M1 (Create Post With Categories)       211.94%
+    M2 (Get Post With Categories)          51.91%
+  sequelize:
+    C1 (Create User)                       29.46%
+    C2 (Create Post)                       39.57%
+    C3 (Bulk Insert Posts (10))            -1.51%
+    R1 (Get User By ID)                    23.47%
+    R2 (Get Post By ID)                    42.90%
+    R3 (Get Paginated Posts)               33.38%
+    U1 (Update User)                       32.51%
+    U2 (Update Post)                       -22.05%
+    D1 (Delete User)                       -10.76%
+    D2 (Bulk Delete Posts by Author)       8.59%
+    J1 (Get Post With Author)              52.25%
+    M1 (Create Post With Categories)       54.99%
+    M2 (Get Post With Categories)          49.58%
+  drizzle:
+    C1 (Create User)                       43.04%
+    C2 (Create Post)                       44.11%
+    C3 (Bulk Insert Posts (10))            9.14%
+    R1 (Get User By ID)                    61.88%
+    R2 (Get Post By ID)                    74.96%
+    R3 (Get Paginated Posts)               222.08%
+    U1 (Update User)                       55.67%
+    U2 (Update Post)                       -13.93%
+    D1 (Delete User)                       13.27%
+    D2 (Bulk Delete Posts by Author)       48.35%
+    J1 (Get Post With Author)              75.91%
+    M1 (Create Post With Categories)       41.54%
+    M2 (Get Post With Categories)          80.48%
+
+┌─ Stability Report (CV% < 15% = stable)
+
+  rawsql: 7 unstable
+    C1 (Create User)                       CV=14.51% [OK]
+    C2 (Create Post)                       CV=8.43% [OK]
+    C3 (Bulk Insert Posts (10))            CV=150.70% [UNSTABLE]
+    R1 (Get User By ID)                    CV=16.00% [UNSTABLE]
+    R2 (Get Post By ID)                    CV=12.67% [OK]
+    R3 (Get Paginated Posts)               CV=15.42% [UNSTABLE]
+    U1 (Update User)                       CV=12.69% [OK]
+    U2 (Update Post)                       CV=112.32% [UNSTABLE]
+    D1 (Delete User)                       CV=23.71% [UNSTABLE]
+    D2 (Bulk Delete Posts by Author)       CV=10.59% [OK]
+    J1 (Get Post With Author)              CV=10.20% [OK]
+    M1 (Create Post With Categories)       CV=16.66% [UNSTABLE]
+    M2 (Get Post With Categories)          CV=15.28% [UNSTABLE]
+  prisma: 6 unstable
+    C1 (Create User)                       CV=14.78% [OK]
+    C2 (Create Post)                       CV=11.91% [OK]
+    C3 (Bulk Insert Posts (10))            CV=14.66% [OK]
+    R1 (Get User By ID)                    CV=10.82% [OK]
+    R2 (Get Post By ID)                    CV=16.68% [UNSTABLE]
+    R3 (Get Paginated Posts)               CV=13.13% [OK]
+    U1 (Update User)                       CV=11.29% [OK]
+    U2 (Update Post)                       CV=39.24% [UNSTABLE]
+    D1 (Delete User)                       CV=12.59% [OK]
+    D2 (Bulk Delete Posts by Author)       CV=98.16% [UNSTABLE]
+    J1 (Get Post With Author)              CV=23.81% [UNSTABLE]
+    M1 (Create Post With Categories)       CV=91.22% [UNSTABLE]
+    M2 (Get Post With Categories)          CV=15.31% [UNSTABLE]
+  typeorm: 5 unstable
+    C1 (Create User)                       CV=20.94% [UNSTABLE]
+    C2 (Create Post)                       CV=10.54% [OK]
+    C3 (Bulk Insert Posts (10))            CV=15.50% [UNSTABLE]
+    R1 (Get User By ID)                    CV=89.22% [UNSTABLE]
+    R2 (Get Post By ID)                    CV=76.44% [UNSTABLE]
+    R3 (Get Paginated Posts)               CV=11.11% [OK]
+    U1 (Update User)                       CV=16.45% [UNSTABLE]
+    U2 (Update Post)                       CV=10.70% [OK]
+    D1 (Delete User)                       CV=10.50% [OK]
+    D2 (Bulk Delete Posts by Author)       CV=9.07% [OK]
+    J1 (Get Post With Author)              CV=10.47% [OK]
+    M1 (Create Post With Categories)       CV=13.51% [OK]
+    M2 (Get Post With Categories)          CV=11.84% [OK]
+  sequelize: 2 unstable
+    C1 (Create User)                       CV=13.96% [OK]
+    C2 (Create Post)                       CV=12.55% [OK]
+    C3 (Bulk Insert Posts (10))            CV=13.73% [OK]
+    R1 (Get User By ID)                    CV=12.46% [OK]
+    R2 (Get Post By ID)                    CV=9.66% [OK]
+    R3 (Get Paginated Posts)               CV=18.83% [UNSTABLE]
+    U1 (Update User)                       CV=19.51% [UNSTABLE]
+    U2 (Update Post)                       CV=13.61% [OK]
+    D1 (Delete User)                       CV=10.24% [OK]
+    D2 (Bulk Delete Posts by Author)       CV=11.38% [OK]
+    J1 (Get Post With Author)              CV=12.44% [OK]
+    M1 (Create Post With Categories)       CV=9.65% [OK]
+    M2 (Get Post With Categories)          CV=10.35% [OK]
+  drizzle: 2 unstable
+    C1 (Create User)                       CV=10.18% [OK]
+    C2 (Create Post)                       CV=11.36% [OK]
+    C3 (Bulk Insert Posts (10))            CV=11.62% [OK]
+    R1 (Get User By ID)                    CV=9.03% [OK]
+    R2 (Get Post By ID)                    CV=15.47% [UNSTABLE]
+    R3 (Get Paginated Posts)               CV=48.18% [UNSTABLE]
+    U1 (Update User)                       CV=11.01% [OK]
+    U2 (Update Post)                       CV=12.08% [OK]
+    D1 (Delete User)                       CV=12.14% [OK]
+    D2 (Bulk Delete Posts by Author)       CV=14.88% [OK]
+    J1 (Get Post With Author)              CV=11.27% [OK]
+    M1 (Create Post With Categories)       CV=10.98% [OK]
+    M2 (Get Post With Categories)          CV=11.71% [OK]
+
+================================================================================
+Dataset Size: 100000
+================================================================================
+
+┌─ Execution Time (ms) — Mean (CV%)
+
+Operation                                 rawsql          prisma         typeorm       sequelize         drizzle
+----------------------------------------------------------------------------------------------------------------
+C1: Create User                    3.238 (21.5%)   3.663 (33.3%)   8.766 (26.5%)   5.412 (46.1%)   5.008 (16.2%)
+C2: Create Post                    2.831 (10.8%)   3.524 (13.4%)    6.901 (9.0%)   4.010 (13.5%)    4.584 (8.9%)
+C3: Bulk Insert Posts (10)         3.547 (11.0%)   5.802 (15.4%)   5.214 (18.0%)   5.352 (12.0%)   5.684 (14.4%)
+R1: Get User By ID                 1.735 (13.7%)   2.483 (17.7%)   3.449 (33.1%)   3.016 (18.6%)   5.490 (32.8%)
+R2: Get Post By ID                 1.819 (15.2%)   2.441 (18.2%)   2.915 (18.8%)  4.817 (112.5%)   3.486 (10.9%)
+R3: Get Paginated Posts            2.342 (35.0%)   2.604 (12.2%)   3.263 (12.3%)   3.055 (16.8%)   4.992 (75.6%)
+U1: Update User                    3.144 (10.9%)    3.313 (7.3%)   3.828 (10.7%)   4.099 (16.8%)    4.652 (9.5%)
+U2: Update Post                     2.903 (7.4%)   3.556 (16.1%)   3.969 (19.7%)   4.263 (33.1%)    4.617 (8.9%)
+D1: Delete User                    17.350 (7.7%)  17.151 (14.2%)  23.078 (26.7%)  18.957 (18.2%)  19.730 (11.2%)
+D2: Bulk Delete Posts by Author   15.524 (13.9%)  15.644 (11.3%)  16.101 (10.1%)  24.258 (37.0%)  38.606 (40.7%)
+J1: Get Post With Author            1.943 (9.2%)   3.480 (11.2%)   4.517 (31.7%)   3.645 (16.5%)   3.684 (18.7%)
+M1: Create Post With Categories    5.216 (10.1%)   9.531 (44.8%)  18.896 (17.9%)   8.899 (11.3%)   7.287 (10.4%)
+M2: Get Post With Categories       2.305 (10.0%)    3.367 (8.2%)   3.451 (20.3%)   3.450 (15.4%)    3.863 (6.7%)
+
+┌─ Detailed Execution Time Stats (ms)
+
+
+  C1: Create User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.238     2.531     4.959     0.695     21.47
+  prisma             3.663     2.787     7.272     1.221     33.33
+  typeorm            8.766     5.935    12.048     2.321     26.48
+  sequelize          5.412     3.758    12.643     2.494     46.08
+  drizzle            5.008     4.066     7.085     0.813     16.23
+
+  C2: Create Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.831     2.389     3.464     0.306     10.83
+  prisma             3.524     2.605     4.149     0.473     13.42
+  typeorm            6.901     5.497     8.170     0.621      9.00
+  sequelize          4.010     3.376     5.295     0.541     13.48
+  drizzle            4.584     3.897     5.036     0.408      8.89
+
+  C3: Bulk Insert Posts (10)
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.547     3.013     4.250     0.391     11.03
+  prisma             5.802     4.765     7.967     0.893     15.40
+  typeorm            5.214     4.159     7.173     0.940     18.02
+  sequelize          5.352     4.429     6.728     0.642     12.00
+  drizzle            5.684     4.516     7.508     0.821     14.44
+
+  R1: Get User By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             1.735     1.548     2.399     0.237     13.68
+  prisma             2.483     1.808     3.338     0.440     17.74
+  typeorm            3.449     2.333     6.638     1.140     33.06
+  sequelize          3.016     2.239     4.130     0.560     18.56
+  drizzle            5.490     3.395     8.708     1.800     32.79
+
+  R2: Get Post By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             1.819     1.475     2.472     0.277     15.24
+  prisma             2.441     1.997     3.333     0.444     18.20
+  typeorm            2.915     2.345     4.263     0.549     18.83
+  sequelize          4.817     2.510    20.986     5.418    112.46
+  drizzle            3.486     2.868     4.141     0.379     10.88
+
+  R3: Get Paginated Posts
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.342     1.811     4.742     0.819     34.97
+  prisma             2.604     2.085     3.077     0.317     12.19
+  typeorm            3.263     2.860     4.135     0.401     12.29
+  sequelize          3.055     2.456     4.332     0.514     16.82
+  drizzle            4.992     3.220    16.224     3.772     75.56
+
+  U1: Update User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             3.144     2.644     3.904     0.342     10.87
+  prisma             3.313     2.910     3.832     0.243      7.35
+  typeorm            3.828     3.389     4.875     0.411     10.73
+  sequelize          4.099     3.328     5.479     0.689     16.80
+  drizzle            4.652     3.884     5.290     0.442      9.50
+
+  U2: Update Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.903     2.458     3.194     0.214      7.37
+  prisma             3.556     2.882     5.003     0.574     16.14
+  typeorm            3.969     3.189     5.931     0.780     19.66
+  sequelize          4.263     3.254     8.258     1.411     33.10
+  drizzle            4.617     4.207     5.505     0.409      8.85
+
+  D1: Delete User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            17.350    15.470    19.844     1.329      7.66
+  prisma            17.151    14.915    22.256     2.438     14.21
+  typeorm           23.078    16.984    35.143     6.165     26.71
+  sequelize         18.957    14.816    25.603     3.442     18.16
+  drizzle           19.730    16.159    24.961     2.211     11.21
+
+  D2: Bulk Delete Posts by Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            15.524    13.160    20.305     2.161     13.92
+  prisma            15.644    14.121    20.571     1.767     11.29
+  typeorm           16.101    14.181    19.553     1.633     10.14
+  sequelize         24.258    14.865    43.754     8.975     37.00
+  drizzle           38.606    19.232    71.585    15.698     40.66
+
+  J1: Get Post With Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             1.943     1.580     2.150     0.179      9.19
+  prisma             3.480     2.884     4.294     0.391     11.23
+  typeorm            4.517     3.172     7.101     1.433     31.74
+  sequelize          3.645     2.961     4.741     0.601     16.50
+  drizzle            3.684     2.874     5.458     0.691     18.75
+
+  M1: Create Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             5.216     3.998     6.014     0.529     10.14
+  prisma             9.531     6.401    21.712     4.273     44.83
+  typeorm           18.896    13.341    23.924     3.386     17.92
+  sequelize          8.899     7.024    10.899     1.009     11.34
+  drizzle            7.287     5.911     8.494     0.760     10.43
+
+  M2: Get Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql             2.305     2.098     2.846     0.231     10.01
+  prisma             3.367     2.925     3.757     0.277      8.22
+  typeorm            3.451     2.747     5.341     0.699     20.25
+  sequelize          3.450     3.019     4.867     0.531     15.38
+  drizzle            3.863     3.291     4.157     0.260      6.72
+
+┌─ Memory Consumption (MB) — Mean (CV%)
+
+Operation                                 rawsql          prisma         typeorm       sequelize         drizzle
+----------------------------------------------------------------------------------------------------------------
+C1: Create User                     25.21 (0.2%)    25.31 (0.2%)    25.70 (0.4%)    26.07 (0.3%)    26.21 (0.3%)
+C2: Create Post                     26.25 (0.0%)    26.27 (0.0%)    26.49 (0.0%)    26.57 (0.0%)    26.58 (0.0%)
+C3: Bulk Insert Posts (10)          26.76 (0.0%)    26.77 (0.0%)    27.10 (0.1%)    27.19 (0.2%)    27.25 (0.1%)
+R1: Get User By ID                  27.28 (0.0%)    27.31 (0.0%)    27.52 (0.5%)    27.63 (0.2%)    27.72 (0.1%)
+R2: Get Post By ID                  27.76 (0.0%)    27.79 (0.0%)    27.89 (0.0%)    27.90 (0.0%)    27.94 (0.0%)
+R3: Get Paginated Posts             27.98 (0.0%)    27.97 (0.0%)    28.12 (0.0%)    28.15 (0.0%)    28.17 (0.0%)
+U1: Update User                     28.12 (0.0%)    28.11 (0.0%)    28.22 (0.1%)    28.32 (0.1%)    28.33 (0.0%)
+U2: Update Post                     28.33 (0.0%)    28.35 (0.0%)    28.42 (0.0%)    28.45 (0.0%)    28.44 (0.0%)
+D1: Delete User                     28.38 (0.0%)    28.39 (0.0%)    28.47 (0.0%)    28.49 (0.0%)    28.51 (0.0%)
+D2: Bulk Delete Posts by Author     28.47 (0.0%)    28.46 (0.0%)    28.55 (0.0%)    28.54 (0.0%)    28.54 (0.0%)
+J1: Get Post With Author            28.66 (0.0%)    28.68 (0.0%)    28.84 (0.5%)    28.91 (0.1%)    28.91 (0.0%)
+M1: Create Post With Categories     28.92 (0.0%)    28.93 (0.0%)    29.42 (0.1%)    29.22 (0.0%)    29.14 (0.0%)
+M2: Get Post With Categories        29.05 (0.0%)    29.08 (0.0%)    29.16 (0.0%)    29.23 (0.0%)    29.21 (0.0%)
+
+┌─ Detailed Memory Stats (MB)
+
+
+  C1: Create User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            25.209    25.188    25.339     0.044      0.17
+  prisma            25.306    25.242    25.433     0.053      0.21
+  typeorm           25.702    25.549    25.839     0.106      0.41
+  sequelize         26.067    25.901    26.185     0.072      0.28
+  drizzle           26.214    26.124    26.437     0.079      0.30
+
+  C2: Create Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            26.249    26.245    26.253     0.004      0.01
+  prisma            26.272    26.262    26.292     0.010      0.04
+  typeorm           26.487    26.480    26.501     0.008      0.03
+  sequelize         26.567    26.554    26.583     0.009      0.04
+  drizzle           26.579    26.570    26.584     0.005      0.02
+
+  C3: Bulk Insert Posts (10)
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            26.758    26.743    26.773     0.009      0.04
+  prisma            26.773    26.772    26.777     0.002      0.01
+  typeorm           27.096    27.064    27.120     0.022      0.08
+  sequelize         27.187    27.115    27.249     0.052      0.19
+  drizzle           27.249    27.214    27.294     0.022      0.08
+
+  R1: Get User By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            27.278    27.276    27.292     0.005      0.02
+  prisma            27.306    27.294    27.317     0.005      0.02
+  typeorm           27.516    27.382    27.734     0.127      0.46
+  sequelize         27.631    27.565    27.688     0.052      0.19
+  drizzle           27.720    27.699    27.757     0.021      0.07
+
+  R2: Get Post By ID
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            27.760    27.753    27.772     0.006      0.02
+  prisma            27.789    27.788    27.790     0.001      0.00
+  typeorm           27.886    27.881    27.895     0.006      0.02
+  sequelize         27.899    27.893    27.904     0.004      0.02
+  drizzle           27.935    27.928    27.944     0.005      0.02
+
+  R3: Get Paginated Posts
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            27.980    27.979    27.985     0.002      0.01
+  prisma            27.967    27.952    27.973     0.006      0.02
+  typeorm           28.125    28.116    28.136     0.007      0.03
+  sequelize         28.153    28.123    28.170     0.012      0.04
+  drizzle           28.168    28.162    28.178     0.005      0.02
+
+  U1: Update User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.122    28.116    28.123     0.003      0.01
+  prisma            28.106    28.101    28.109     0.003      0.01
+  typeorm           28.215    28.171    28.256     0.030      0.11
+  sequelize         28.320    28.298    28.340     0.017      0.06
+  drizzle           28.326    28.312    28.341     0.014      0.05
+
+  U2: Update Post
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.329    28.325    28.330     0.001      0.01
+  prisma            28.349    28.346    28.350     0.001      0.00
+  typeorm           28.416    28.415    28.417     0.000      0.00
+  sequelize         28.447    28.446    28.452     0.002      0.01
+  drizzle           28.442    28.440    28.452     0.003      0.01
+
+  D1: Delete User
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.383    28.382    28.386     0.001      0.01
+  prisma            28.389    28.388    28.395     0.002      0.01
+  typeorm           28.466    28.462    28.481     0.006      0.02
+  sequelize         28.486    28.483    28.502     0.005      0.02
+  drizzle           28.510    28.504    28.520     0.005      0.02
+
+  D2: Bulk Delete Posts by Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.469    28.469    28.471     0.001      0.00
+  prisma            28.464    28.463    28.466     0.001      0.00
+  typeorm           28.553    28.551    28.557     0.002      0.01
+  sequelize         28.537    28.534    28.542     0.003      0.01
+  drizzle           28.542    28.541    28.545     0.001      0.00
+
+  J1: Get Post With Author
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.663    28.662    28.673     0.003      0.01
+  prisma            28.683    28.675    28.688     0.003      0.01
+  typeorm           28.841    28.778    29.260     0.140      0.49
+  sequelize         28.909    28.875    28.940     0.029      0.10
+  drizzle           28.912    28.907    28.917     0.004      0.01
+
+  M1: Create Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            28.923    28.916    28.942     0.007      0.02
+  prisma            28.929    28.926    28.930     0.002      0.01
+  typeorm           29.417    29.388    29.436     0.018      0.06
+  sequelize         29.220    29.197    29.235     0.012      0.04
+  drizzle           29.143    29.139    29.160     0.006      0.02
+
+  M2: Get Post With Categories
+Framework           Mean       Min       Max    StdDev       CV%
+  --------------------------------------------------------------
+  rawsql            29.054    29.053    29.064     0.003      0.01
+  prisma            29.081    29.078    29.082     0.001      0.00
+  typeorm           29.162    29.156    29.164     0.003      0.01
+  sequelize         29.232    29.216    29.247     0.010      0.04
+  drizzle           29.208    29.206    29.211     0.002      0.01
+
+┌─ Overhead % vs Raw SQL (based on mean execution time)
+
+  prisma:
+    C1 (Create User)                       13.11%
+    C2 (Create Post)                       24.49%
+    C3 (Bulk Insert Posts (10))            63.59%
+    R1 (Get User By ID)                    43.12%
+    R2 (Get Post By ID)                    34.16%
+    R3 (Get Paginated Posts)               11.20%
+    U1 (Update User)                       5.38%
+    U2 (Update Post)                       22.49%
+    D1 (Delete User)                       -1.14%
+    D2 (Bulk Delete Posts by Author)       0.78%
+    J1 (Get Post With Author)              79.15%
+    M1 (Create Post With Categories)       82.72%
+    M2 (Get Post With Categories)          46.06%
+  typeorm:
+    C1 (Create User)                       170.68%
+    C2 (Create Post)                       143.81%
+    C3 (Bulk Insert Posts (10))            46.98%
+    R1 (Get User By ID)                    98.83%
+    R2 (Get Post By ID)                    60.22%
+    R3 (Get Paginated Posts)               39.36%
+    U1 (Update User)                       21.76%
+    U2 (Update Post)                       36.71%
+    D1 (Delete User)                       33.02%
+    D2 (Bulk Delete Posts by Author)       3.72%
+    J1 (Get Post With Author)              132.48%
+    M1 (Create Post With Categories)       262.25%
+    M2 (Get Post With Categories)          49.72%
+  sequelize:
+    C1 (Create User)                       67.13%
+    C2 (Create Post)                       41.67%
+    C3 (Bulk Insert Posts (10))            50.89%
+    R1 (Get User By ID)                    73.86%
+    R2 (Get Post By ID)                    164.81%
+    R3 (Get Paginated Posts)               30.47%
+    U1 (Update User)                       30.36%
+    U2 (Update Post)                       46.86%
+    D1 (Delete User)                       9.26%
+    D2 (Bulk Delete Posts by Author)       56.26%
+    J1 (Get Post With Author)              87.61%
+    M1 (Create Post With Categories)       70.60%
+    M2 (Get Post With Categories)          49.67%
+  drizzle:
+    C1 (Create User)                       54.65%
+    C2 (Create Post)                       61.96%
+    C3 (Bulk Insert Posts (10))            60.25%
+    R1 (Get User By ID)                    216.48%
+    R2 (Get Post By ID)                    91.63%
+    R3 (Get Paginated Posts)               113.18%
+    U1 (Update User)                       47.97%
+    U2 (Update Post)                       59.06%
+    D1 (Delete User)                       13.71%
+    D2 (Bulk Delete Posts by Author)       148.69%
+    J1 (Get Post With Author)              89.64%
+    M1 (Create Post With Categories)       39.70%
+    M2 (Get Post With Categories)          67.58%
+
+┌─ Stability Report (CV% < 15% = stable)
+
+  rawsql: 3 unstable
+    C1 (Create User)                       CV=21.47% [UNSTABLE]
+    C2 (Create Post)                       CV=10.83% [OK]
+    C3 (Bulk Insert Posts (10))            CV=11.03% [OK]
+    R1 (Get User By ID)                    CV=13.68% [OK]
+    R2 (Get Post By ID)                    CV=15.24% [UNSTABLE]
+    R3 (Get Paginated Posts)               CV=34.97% [UNSTABLE]
+    U1 (Update User)                       CV=10.87% [OK]
+    U2 (Update Post)                       CV=7.37% [OK]
+    D1 (Delete User)                       CV=7.66% [OK]
+    D2 (Bulk Delete Posts by Author)       CV=13.92% [OK]
+    J1 (Get Post With Author)              CV=9.19% [OK]
+    M1 (Create Post With Categories)       CV=10.14% [OK]
+    M2 (Get Post With Categories)          CV=10.01% [OK]
+  prisma: 6 unstable
+    C1 (Create User)                       CV=33.33% [UNSTABLE]
+    C2 (Create Post)                       CV=13.42% [OK]
+    C3 (Bulk Insert Posts (10))            CV=15.40% [UNSTABLE]
+    R1 (Get User By ID)                    CV=17.74% [UNSTABLE]
+    R2 (Get Post By ID)                    CV=18.20% [UNSTABLE]
+    R3 (Get Paginated Posts)               CV=12.19% [OK]
+    U1 (Update User)                       CV=7.35% [OK]
+    U2 (Update Post)                       CV=16.14% [UNSTABLE]
+    D1 (Delete User)                       CV=14.21% [OK]
+    D2 (Bulk Delete Posts by Author)       CV=11.29% [OK]
+    J1 (Get Post With Author)              CV=11.23% [OK]
+    M1 (Create Post With Categories)       CV=44.83% [UNSTABLE]
+    M2 (Get Post With Categories)          CV=8.22% [OK]
+  typeorm: 9 unstable
+    C1 (Create User)                       CV=26.48% [UNSTABLE]
+    C2 (Create Post)                       CV=9.00% [OK]
+    C3 (Bulk Insert Posts (10))            CV=18.02% [UNSTABLE]
+    R1 (Get User By ID)                    CV=33.06% [UNSTABLE]
+    R2 (Get Post By ID)                    CV=18.83% [UNSTABLE]
+    R3 (Get Paginated Posts)               CV=12.29% [OK]
+    U1 (Update User)                       CV=10.73% [OK]
+    U2 (Update Post)                       CV=19.66% [UNSTABLE]
+    D1 (Delete User)                       CV=26.71% [UNSTABLE]
+    D2 (Bulk Delete Posts by Author)       CV=10.14% [OK]
+    J1 (Get Post With Author)              CV=31.74% [UNSTABLE]
+    M1 (Create Post With Categories)       CV=17.92% [UNSTABLE]
+    M2 (Get Post With Categories)          CV=20.25% [UNSTABLE]
+  sequelize: 10 unstable
+    C1 (Create User)                       CV=46.08% [UNSTABLE]
+    C2 (Create Post)                       CV=13.48% [OK]
+    C3 (Bulk Insert Posts (10))            CV=12.00% [OK]
+    R1 (Get User By ID)                    CV=18.56% [UNSTABLE]
+    R2 (Get Post By ID)                    CV=112.46% [UNSTABLE]
+    R3 (Get Paginated Posts)               CV=16.82% [UNSTABLE]
+    U1 (Update User)                       CV=16.80% [UNSTABLE]
+    U2 (Update Post)                       CV=33.10% [UNSTABLE]
+    D1 (Delete User)                       CV=18.16% [UNSTABLE]
+    D2 (Bulk Delete Posts by Author)       CV=37.00% [UNSTABLE]
+    J1 (Get Post With Author)              CV=16.50% [UNSTABLE]
+    M1 (Create Post With Categories)       CV=11.34% [OK]
+    M2 (Get Post With Categories)          CV=15.38% [UNSTABLE]
+  drizzle: 5 unstable
+    C1 (Create User)                       CV=16.23% [UNSTABLE]
+    C2 (Create Post)                       CV=8.89% [OK]
+    C3 (Bulk Insert Posts (10))            CV=14.44% [OK]
+    R1 (Get User By ID)                    CV=32.79% [UNSTABLE]
+    R2 (Get Post By ID)                    CV=10.88% [OK]
+    R3 (Get Paginated Posts)               CV=75.56% [UNSTABLE]
+    U1 (Update User)                       CV=9.50% [OK]
+    U2 (Update Post)                       CV=8.85% [OK]
+    D1 (Delete User)                       CV=11.21% [OK]
+    D2 (Bulk Delete Posts by Author)       CV=40.66% [UNSTABLE]
+    J1 (Get Post With Author)              CV=18.75% [UNSTABLE]
+    M1 (Create Post With Categories)       CV=10.43% [OK]
+    M2 (Get Post With Categories)          CV=6.72% [OK]
+
+================================================================================
+CROSS-SIZE SUMMARY — Mean Execution Time (ms)
+================================================================================
+
+  C1: Create User
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  3.123           3.405           6.916           4.385           4.416
+  1000                 3.000           3.273           6.085           3.794           4.324
+  10000                2.880           3.319           6.454           3.729           4.120
+  100000               3.238           3.663           8.766           5.412           5.008
+
+  C2: Create Post
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  3.097           3.483           6.255           4.418           4.434
+  1000                 3.128           3.560           6.499           3.859           4.410
+  10000                2.942           3.219           6.052           4.107           4.240
+  100000               2.831           3.524           6.901           4.010           4.584
+
+  C3: Bulk Insert Posts (10)
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  3.514           5.163           4.653           4.979           5.315
+  1000                 5.036           6.734           5.324           5.356           5.883
+  10000                4.863           5.150           4.352           4.789           5.307
+  100000               3.547           5.802           5.214           5.352           5.684
+
+  R1: Get User By ID
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  1.854           2.369           2.589           2.345           2.998
+  1000                 2.101           2.383           2.629           3.056           3.384
+  10000                1.833           2.150           3.265           2.263           2.966
+  100000               1.735           2.483           3.449           3.016           5.490
+
+  R2: Get Post By ID
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  1.735           2.352           4.761           2.426           3.186
+  1000                 3.010           2.445           2.743           2.434           3.042
+  10000                1.721           2.297           3.215           2.459           3.011
+  100000               1.819           2.441           2.915           4.817           3.486
+
+  R3: Get Paginated Posts
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  2.022           2.382           2.852           3.381           3.360
+  1000                 2.998           2.530           3.230           2.586           3.320
+  10000                2.029           2.363           2.828           2.706           6.535
+  100000               2.342           2.604           3.263           3.055           4.992
+
+  U1: Update User
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  2.775           3.452           3.786           3.687           4.289
+  1000                 2.810           3.497           3.763           3.801           4.298
+  10000                2.808           3.326           3.854           3.721           4.372
+  100000               3.144           3.313           3.828           4.099           4.652
+
+  U2: Update Post
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  3.217           3.510           4.010           3.578           4.257
+  1000                 3.028           3.512           4.503           3.710           4.512
+  10000                4.856           4.045           3.826           3.785           4.179
+  100000               2.903           3.556           3.969           4.263           4.617
+
+  D1: Delete User
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  3.035           3.549           3.824           3.311           4.493
+  1000                 2.957           4.300          11.927           4.630           5.507
+  10000                5.112           4.998           5.159           4.561           5.790
+  100000              17.350          17.151          23.078          18.957          19.730
+
+  D2: Bulk Delete Posts by Author
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  1.717           2.157           2.410           1.994           3.263
+  1000                 1.894           2.023           2.518           2.226           3.081
+  10000                3.083           6.060           3.876           3.348           4.574
+  100000              15.524          15.644          16.101          24.258          38.606
+
+  J1: Get Post With Author
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  2.058           3.521           3.497           3.082           3.319
+  1000                 2.082           3.352           3.226           3.761           3.475
+  10000                1.965           3.630           3.050           2.991           3.456
+  100000               1.943           3.480           4.517           3.645           3.684
+
+  M1: Create Post With Categories
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  5.069           7.241          15.120           8.241           7.890
+  1000                 5.050           6.616          15.415           8.000           7.892
+  10000                5.119           8.422          15.968           7.934           7.245
+  100000               5.216           9.531          18.896           8.899           7.287
+
+  M2: Get Post With Categories
+Size                rawsql          prisma         typeorm       sequelize         drizzle
+  ----------------------------------------------------------------------------------------
+  100                  2.294           3.261           3.417           3.805           3.793
+  1000                 2.189           3.283           3.297           3.330           3.779
+  10000                2.176           3.487           3.306           3.255           3.928
+  100000               2.305           3.367           3.451           3.450           3.863
+
+================================================================================
+CROSS-SIZE SUMMARY — Overhead % vs Raw SQL
+================================================================================
+
+  prisma:
+Size            C1      C2      C3      R1      R2      R3      U1      U2      D1      D2      J1      M1      M2
+  ----------------------------------------------------------------------------------------------------------------
+  100           9.0%   12.5%   46.9%   27.8%   35.5%   17.8%   24.4%    9.1%   17.0%   25.6%   71.1%   42.8%   42.1%
+  1000          9.1%   13.8%   33.7%   13.4%  -18.8%  -15.6%   24.5%   16.0%   45.4%    6.8%   61.0%   31.0%   49.9%
+  10000        15.2%    9.4%    5.9%   17.3%   33.5%   16.4%   18.4%  -16.7%   -2.2%   96.5%   84.8%   64.5%   60.2%
+  100000       13.1%   24.5%   63.6%   43.1%   34.2%   11.2%    5.4%   22.5%   -1.1%    0.8%   79.1%   82.7%   46.1%
+
+  typeorm:
+Size            C1      C2      C3      R1      R2      R3      U1      U2      D1      D2      J1      M1      M2
+  ----------------------------------------------------------------------------------------------------------------
+  100         121.5%  102.0%   32.4%   39.7%  174.4%   41.1%   36.5%   24.7%   26.0%   40.4%   69.9%  198.3%   48.9%
+  1000        102.8%  107.8%    5.7%   25.1%   -8.9%    7.7%   33.9%   48.7%  303.3%   32.9%   55.0%  205.2%   50.6%
+  10000       124.1%  105.7%  -10.5%   78.2%   86.8%   39.4%   37.2%  -21.2%    0.9%   25.7%   55.2%  211.9%   51.9%
+  100000      170.7%  143.8%   47.0%   98.8%   60.2%   39.4%   21.8%   36.7%   33.0%    3.7%  132.5%  262.3%   49.7%
+
+  sequelize:
+Size            C1      C2      C3      R1      R2      R3      U1      U2      D1      D2      J1      M1      M2
+  ----------------------------------------------------------------------------------------------------------------
+  100          40.4%   42.7%   41.7%   26.5%   39.8%   67.2%   32.9%   11.2%    9.1%   16.1%   49.8%   62.6%   65.8%
+  1000         26.5%   23.4%    6.4%   45.4%  -19.1%  -13.7%   35.3%   22.5%   56.6%   17.5%   80.7%   58.4%   52.1%
+  10000        29.5%   39.6%   -1.5%   23.5%   42.9%   33.4%   32.5%  -22.0%  -10.8%    8.6%   52.3%   55.0%   49.6%
+  100000       67.1%   41.7%   50.9%   73.9%  164.8%   30.5%   30.4%   46.9%    9.3%   56.3%   87.6%   70.6%   49.7%
+
+  drizzle:
+Size            C1      C2      C3      R1      R2      R3      U1      U2      D1      D2      J1      M1      M2
+  ----------------------------------------------------------------------------------------------------------------
+  100          41.4%   43.2%   51.2%   61.7%   83.6%   66.2%   54.6%   32.3%   48.1%   90.0%   61.3%   55.6%   65.3%
+  1000         44.1%   41.0%   16.8%   61.1%    1.1%   10.8%   53.0%   49.0%   86.2%   62.6%   66.9%   56.3%   72.6%
+  10000        43.0%   44.1%    9.1%   61.9%   75.0%  222.1%   55.7%  -13.9%   13.3%   48.4%   75.9%   41.5%   80.5%
+  100000       54.7%   62.0%   60.3%  216.5%   91.6%  113.2%   48.0%   59.1%   13.7%  148.7%   89.6%   39.7%   67.6%
+
+All results reported.
