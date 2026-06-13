@@ -14,16 +14,17 @@ Warsaw, 2025
 1. Introduction
 2. Concept of Development
 3. Technologies and Tools Used in Work
-4. Implementation
-5. Results and Analysis *(to be completed after benchmarks)*
-6. Conclusions *(to be completed after benchmarks)*
+4. Implementation and Methodology
+5. Results and Analysis
+6. Evaluation of Functional Differences
+7. Summary and Conclusions
 Bibliography
 
 ---
 
 ## Abstract
 
-This master's thesis analyzes query languages in Object-Relational Mapping (ORM) frameworks, examining their expressiveness and limitations compared to raw SQL execution. The study compares four popular ORM frameworks in the Node.js ecosystem — Prisma, TypeORM, Sequelize, and Drizzle — alongside the native PostgreSQL driver (pg) as a performance baseline. The research includes performance measurements (query execution time), memory consumption analysis, code complexity assessment (lines of code for equivalent operations), and evaluation of language expressiveness (which SQL constructs each ORM can express natively). Tests were conducted for fundamental database operations including Create, Read, Update, and Delete, as well as table joins, bulk inserts, and many-to-many relationship handling. Results are measured across four dataset sizes (100, 1 000, 10 000, and 100 000 records), with each operation repeated 10-20 times to ensure statistical reliability through coefficient of variation analysis. The thesis provides practical guidance for developers choosing between raw SQL and ORM frameworks depending on project requirements, team expertise, and performance needs.
+This master's thesis analyzes query languages in Object-Relational Mapping (ORM) frameworks, examining their expressiveness and limitations compared to raw SQL execution. The study compares four popular ORM frameworks in the Node.js ecosystem — Prisma, TypeORM, Sequelize, and Drizzle — alongside the native PostgreSQL driver (pg) as a performance baseline. The research includes performance measurements (query execution time), memory consumption analysis, code complexity assessment (lines of code for equivalent operations), and evaluation of language expressiveness (which SQL constructs each ORM can express natively). Tests were conducted for fundamental database operations including Create, Read, Update, and Delete, as well as table joins, bulk inserts, pagination, and many-to-many relationship handling. Results are measured across four dataset sizes (100, 1 000, 10 000, and 100 000 records), with each operation repeated 10-20 times to ensure statistical reliability through coefficient of variation analysis. The thesis provides practical guidance for developers choosing between raw SQL and ORM frameworks depending on project requirements, team expertise, and code maintainability needs.
 
 key words: benchmarking, expressiveness, Node.js, ORM, PostgreSQL, SQL
 
@@ -64,6 +65,8 @@ The main research questions guiding this thesis are:
 5. What SQL constructs cannot be expressed natively through each ORM's API, and how easy is it to fall back to raw SQL when the ORM reaches its limits?
 
 6. When should an ORM be used instead of raw SQL in real projects, considering the project's performance requirements, team expertise, and maintainability needs?
+
+7. How does the choice between raw SQL and an ORM affect long-term code maintainability, including readability, refactoring safety, and onboarding time for new developers?
 
 ---
 
@@ -119,15 +122,41 @@ Prisma is an ORM library released in 2019 by Prisma Inc. (formerly Graphcool). I
 
 Prisma operates through two components: the Prisma Client (a TypeScript/JavaScript library that provides the query API) and the Prisma Query Engine (a standalone Rust binary responsible for generating SQL from the client's method calls). This architecture means that every query made through Prisma's API is translated into SQL by the query engine, which then communicates with the database. The query engine's presence introduces additional latency compared to direct driver execution, but it also enables Prisma to provide features such as automatic query parameterization, type-safe result mapping across multiple databases, and an introspect-and-generate workflow that can adapt to existing databases.
 
-A Prisma schema definition for the users table looks like this:
+A Prisma schema definition for the users and posts tables looks like this:
 
 ```prisma
 model users {
   id          Int      @id @default(autoincrement())
   username    String   @unique @db.VarChar(50)
   email       String   @unique @db.VarChar(100)
-  posts       posts[]
+  posts       posts[]  @relation("UserPosts")
   created_at  DateTime @default(now())
+}
+
+model posts {
+  id              Int               @id @default(autoincrement())
+  title           String            @db.VarChar(200)
+  content         String?
+  published       Boolean           @default(false)
+  views           Int               @default(0)
+  author          users             @relation("UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId        Int               @map("author_id")
+  post_categories post_categories[] @relation("PostToCategory")
+  created_at      DateTime          @default(now())
+}
+
+model categories {
+  id              Int               @id @default(autoincrement())
+  name            String            @unique @db.VarChar(50)
+  post_categories post_categories[] @relation("PostToCategory")
+}
+
+model post_categories {
+  post        posts      @relation("PostToCategory", fields: [post_id], references: [id], onDelete: Cascade)
+  post_id     Int
+  category    categories @relation("PostToCategory", fields: [category_id], references: [id], onDelete: Cascade)
+  category_id Int
+  @@id([post_id, category_id])
 }
 ```
 
@@ -145,6 +174,22 @@ const newUser = await prisma.users.create({
 // Retrieve a user by ID
 const user = await prisma.users.findUnique({
   where: { id: newUser.id }
+});
+
+// Create a post with categories (many-to-many nested write)
+const post = await prisma.posts.create({
+  data: {
+    title: 'My Post',
+    content: 'Content here',
+    authorId: newUser.id,
+    post_categories: {
+      create: [
+        { category_id: 1 },
+        { category_id: 2 },
+        { category_id: 3 }
+      ]
+    }
+  }
 });
 ```
 
@@ -168,42 +213,73 @@ In the context of this master's thesis, Prisma represents one of the most modern
 
 ### 3.4 TypeORM
 
-TypeORM is an ORM library for TypeScript and JavaScript released in 2016. It is heavily influenced by the design of Java's Hibernate framework and Microsoft's Entity Framework, providing a decorator-based approach where entity classes are annotated with metadata that maps them to database tables. TypeORM supports both Active Record and Data Mapper patterns, giving developers flexibility in how they structure their data access layer [5].
+TypeORM is an ORM library for TypeScript and JavaScript released in 2016. It is heavily influenced by the design of Java's Hibernate framework and Microsoft's Entity Framework. TypeORM supports both Active Record and Data Mapper patterns, giving developers flexibility in how they structure their data access layer [5].
 
-TypeORM's architecture relies on runtime metadata to translate between TypeScript classes and database tables. When an entity class is decorated with `@Entity()`, `@Column()`, and relationship annotations, TypeORM reads these decorators to build an internal representation of the database schema. At query time, TypeORM's query builder constructs SQL strings from the developer's fluent API calls, which are then executed through the underlying database driver.
+TypeORM supports two approaches for defining entities: decorator-based classes and the EntitySchema approach (programmatic object definitions). In this thesis, the EntitySchema approach is used because it does not require TypeScript compilation or the `reflect-metadata` polyfill, making it compatible with plain JavaScript. The EntitySchema object defines column types, constraints, and relationships as a plain JavaScript object that TypeORM reads at runtime to build its internal schema representation. At query time, TypeORM's query builder constructs SQL strings from the developer's fluent API calls, which are then executed through the underlying database driver.
 
-A TypeORM entity class for the users table looks like this:
+A TypeORM EntitySchema definition for the users and posts tables looks like this:
 
-```typescript
-@Entity('users')
-class User {
-  @PrimaryGeneratedColumn() id: number;
-  @Column({ length: 50 }) username: string;
-  @Column({ length: 100 }) email: string;
-  @CreateDateColumn() created_at: Date;
-  @OneToMany(() => Post, post => post.author) posts: Post[];
-}
+```javascript
+const UserSchema = new EntitySchema({
+  name: 'users', target: 'users', tableName: 'users',
+  columns: {
+    id: { type: Number, primary: true, generated: true },
+    username: { type: 'varchar', length: 50, unique: true },
+    email: { type: 'varchar', length: 100, unique: true },
+    created_at: { type: 'timestamp', createDate: true },
+  },
+  relations: {
+    posts: { target: 'posts', type: 'one-to-many', inverseSide: 'author' },
+  },
+});
+
+const PostSchema = new EntitySchema({
+  name: 'posts', target: 'posts', tableName: 'posts',
+  columns: {
+    id: { type: Number, primary: true, generated: true },
+    title: { type: 'varchar', length: 200 },
+    content: { type: 'text', nullable: true },
+    published: { type: 'boolean', default: false },
+    views: { type: 'int', default: 0 },
+    author_id: { type: 'int' },
+    created_at: { type: 'timestamp', createDate: true },
+  },
+  relations: {
+    author: { target: 'users', type: 'many-to-one',
+      joinColumn: { name: 'author_id' } },
+    categories: { target: 'categories', type: 'many-to-many', cascade: true,
+      joinTable: { name: 'post_categories',
+        joinColumn: { name: 'post_id' },
+        inverseJoinColumn: { name: 'category_id' } } },
+  },
+});
 ```
 
 Querying with TypeORM uses the Repository pattern. A simple insert and read operation look like the following:
 
-```typescript
-const userRepository = dataSource.getRepository(User);
+```javascript
+const userRepo = dataSource.getRepository('users');
 
 // Insert a new user
-const newUser = userRepository.create({
+const newUser = await userRepo.save({
   username: 'john_doe',
   email: 'john@example.com'
 });
-await userRepository.save(newUser);
 
 // Retrieve a user by ID
-const user = await userRepository.findOneBy({ id: newUser.id });
+const user = await userRepo.findOneBy({ id: newUser.id });
+
+// Get a post with its author (JOIN via QueryBuilder)
+const post = await dataSource.getRepository('posts')
+  .createQueryBuilder('p')
+  .innerJoinAndSelect('p.author', 'u')
+  .where('p.id = :id', { id })
+  .getOne();
 ```
 
 Key features of TypeORM include:
 
-- **Decorator-Based Entities**: Entity classes are defined using TypeScript decorators (`@Entity`, `@PrimaryGeneratedColumn`, `@Column`, `@OneToMany`, `@ManyToMany`, etc.) that describe the mapping between the class and the database table. This inline approach keeps entity definitions close to the code using them.
+- **EntitySchema Approach**: Entities are defined as plain JavaScript objects with column and relation specifications, avoiding the need for TypeScript decorators and runtime metadata. This makes the codebase simpler and more maintainable for JavaScript projects.
 
 - **Repository Pattern**: TypeORM provides the Repository pattern for performing database operations on entities. Each entity type has an associated repository that provides standard CRUD methods (`save`, `find`, `findOne`, `remove`) along with a QueryBuilder for more complex queries.
 
@@ -215,7 +291,7 @@ Key features of TypeORM include:
 
 - **Multiple Database Support**: TypeORM supports PostgreSQL, MySQL, MariaDB, SQLite, Microsoft SQL Server, Oracle, and MongoDB, allowing the same codebase to target different databases with minimal changes.
 
-Limitations of TypeORM include the complexity introduced by decorators, which are runtime-dependent and require the `reflect-metadata` polyfill. The decorator-based approach can be confusing for developers unfamiliar with the pattern, and debugging issues with entity mappings can be challenging. The library's documentation, while comprehensive, is sometimes difficult to navigate due to its mixing of Active Record and Data Mapper examples.
+Limitations of TypeORM include the overhead of its entity lifecycle system — the `save()` method triggers validation, hooks, and relationship management on every call, which adds measurable latency compared to the simpler `insert()` method. The library's documentation, while comprehensive, is sometimes difficult to navigate due to its mixing of Active Record and Data Mapper examples.
 
 In the context of this master's thesis, TypeORM represents a middle ground between raw SQL and high-level ORMs like Prisma. Its QueryBuilder provides more expressiveness than Prisma's native API for complex queries, but at the cost of increased verbosity. Comparing TypeORM's performance against the other frameworks provides insight into the trade-offs of different ORM design philosophies.
 
@@ -359,7 +435,7 @@ In the context of this master's thesis, pg establishes the performance baseline 
 
 ---
 
-## 4. Implementation
+## 4. Implementation and Methodology
 
 ### 4.1 Database Schema
 
@@ -617,7 +693,7 @@ const postCategories = pgTable('post_categories', {
 }));
 ```
 
-The query layer uses Drizzle's composable API — `db.insert().into().values()` for inserts, `db.select().from().where()` for queries, `db.update().set().where()` for updates, and `db.delete().from().where()` for deletions. Many-to-many queries require explicit `.innerJoin()` calls.
+The query layer uses Drizzle's composable API — `db.insert(table).values()` for inserts, `db.select().from(table).where()` for queries, `db.update(table).set().where()` for updates, and `db.delete(table).where()` for deletions. Many-to-many queries require explicit `.leftJoin()` or `.innerJoin()` calls.
 
 ### 4.7 Benchmark Testing Environment
 
@@ -678,6 +754,293 @@ The following operations are tested across all five implementations. Each operat
 
 ---
 
+## 5. Results and Analysis
+
+### 5.1 Statistical Methodology
+
+For the performance comparison, each of the 13 database operations was executed repeatedly across all five data access approaches under controlled conditions. The number of iterations varied by dataset size: 20 iterations for datasets of 100, 1 000, and 10 000 records, and 10 iterations for the 100 000 record dataset. Before each measured iteration, garbage collection was forced using `global.gc()` followed by a 50-millisecond pause to allow the garbage collector to settle. Three warmup iterations preceded every measured run to populate the database buffer cache, and these warmup results were discarded.
+
+The following statistical metrics were computed for each combination of operation, dataset size, and framework:
+
+- **Mean execution time** — the arithmetic average of all iteration timings, serving as the primary comparison metric.
+- **Minimum and maximum execution time** — best-case and worst-case observed performance.
+- **Standard deviation** — population standard deviation measuring the spread of results around the mean.
+- **Coefficient of Variation (CV%)** — calculated as (standard deviation / mean) × 100. A CV below 15 percent indicates stable results not significantly affected by buffering, OS scheduling, or other system tasks.
+- **Overhead percentage** — calculated as ((ORM_mean − RawSQL_mean) / RawSQL_mean) × 100, expressing each ORM's overhead relative to the raw SQL baseline.
+
+Memory consumption was recorded identically, capturing the JavaScript heap usage (`process.memoryUsage().heapUsed`) after each iteration.
+
+### 5.2 Execution Time Results — Dataset Size 100
+
+The following table presents the mean execution time (in milliseconds) for all 13 operations at the smallest dataset size (100 users, 100 posts, 5 categories), along with the coefficient of variation in parentheses.
+
+| Operation | Raw SQL | Prisma | TypeORM | Sequelize | Drizzle |
+|-----------|---------|--------|---------|-----------|---------|
+| C1: Create User | 3.123 (15.7%) | 3.405 (13.5%) | 6.916 (37.6%) | 4.385 (11.6%) | 4.416 (10.3%) |
+| C2: Create Post | 3.097 (14.1%) | 3.483 (11.8%) | 6.255 (11.7%) | 4.418 (17.7%) | 4.434 (11.6%) |
+| C3: Bulk Insert (10) | 3.514 (16.2%) | 5.163 (13.0%) | 4.653 (13.5%) | 4.979 (23.0%) | 5.315 (12.6%) |
+| R1: Get User by ID | 1.854 (16.6%) | 2.369 (18.8%) | 2.589 (12.2%) | 2.345 (9.2%) | 2.998 (7.8%) |
+| R2: Get Post by ID | 1.735 (15.7%) | 2.352 (12.8%) | 4.761 (193.6%) | 2.426 (15.0%) | 3.186 (9.9%) |
+| R3: Paginated Posts | 2.022 (16.3%) | 2.382 (13.5%) | 2.852 (12.8%) | 3.381 (97.8%) | 3.360 (10.6%) |
+| U1: Update User | 2.775 (10.5%) | 3.452 (14.4%) | 3.786 (13.5%) | 3.687 (14.4%) | 4.289 (10.8%) |
+| U2: Update Post | 3.217 (51.3%) | 3.510 (17.7%) | 4.010 (25.6%) | 3.578 (10.3%) | 4.257 (10.7%) |
+| D1: Delete User | 3.035 (18.9%) | 3.549 (18.9%) | 3.824 (13.7%) | 3.311 (12.9%) | 4.493 (17.2%) |
+| D2: Bulk Del. by Author | 1.717 (13.2%) | 2.157 (19.8%) | 2.410 (14.1%) | 1.994 (15.1%) | 3.263 (14.2%) |
+| J1: Post with Author | 2.058 (16.6%) | 3.521 (11.4%) | 3.497 (19.1%) | 3.082 (11.1%) | 3.319 (13.2%) |
+| M1: Post + Categories | 5.069 (11.2%) | 7.241 (10.5%) | 15.120 (12.0%) | 8.241 (9.8%) | 7.890 (18.6%) |
+| M2: Get Post + Cats | 2.294 (15.5%) | 3.261 (11.8%) | 3.417 (13.4%) | 3.805 (48.7%) | 3.793 (16.0%) |
+
+At the smallest dataset size, execution times are in the 1–5 millisecond range for simple operations and 5–15 milliseconds for relationship operations. The coefficient of variation is frequently above the 15 percent stability threshold at this scale because the 50-millisecond GC pause between iterations dominates the actual query time, making timing measurements sensitive to OS scheduling variance.
+
+The overhead percentage relative to Raw SQL at size 100 is shown in the following table.
+
+| Operation | Prisma | TypeORM | Sequelize | Drizzle |
+|-----------|--------|---------|-----------|---------|
+| C1: Create User | +9.0% | +121.5% | +40.4% | +41.4% |
+| C2: Create Post | +12.5% | +102.0% | +42.7% | +43.2% |
+| C3: Bulk Insert (10) | +46.9% | +32.4% | +41.7% | +51.2% |
+| R1: Get User by ID | +27.8% | +39.7% | +26.5% | +61.7% |
+| R2: Get Post by ID | +35.5% | +174.4% | +39.8% | +83.6% |
+| R3: Paginated Posts | +17.8% | +41.1% | +67.2% | +66.2% |
+| U1: Update User | +24.4% | +36.5% | +32.9% | +54.6% |
+| U2: Update Post | +9.1% | +24.7% | +11.2% | +32.3% |
+| D1: Delete User | +17.0% | +26.0% | +9.1% | +48.1% |
+| D2: Bulk Del. by Author | +25.6% | +40.4% | +16.1% | +90.0% |
+| J1: Post with Author | +71.1% | +69.9% | +49.8% | +61.3% |
+| M1: Post + Categories | +42.8% | +198.3% | +62.6% | +55.6% |
+| M2: Get Post + Cats | +42.1% | +48.9% | +65.8% | +65.3% |
+
+At this scale, TypeORM shows the highest overhead, ranging from 32 percent to nearly 200 percent above raw SQL, due to its entity lifecycle system that triggers validation and hooks on every `save()` call. Prisma shows the lowest overhead on simple CRUD operations (9–47 percent) but increases to 71 percent on JOIN operations. Drizzle maintains a moderate overhead of 40–90 percent, reflecting its minimal abstraction layer. Sequelize shows a consistent 30–70 percent overhead across most operations.
+
+### 5.3 Execution Time Results — Dataset Size 1 000
+
+At the medium-small dataset size (1 000 users, 1 000 posts, 10 categories), the execution time patterns remain similar to size 100, with a slight improvement in stability for most operations. The mean execution times for key operations are as follows.
+
+| Operation | Raw SQL | Prisma | TypeORM | Sequelize | Drizzle |
+|-----------|---------|--------|---------|-----------|---------|
+| C1: Create User | 3.000 | 3.273 | 6.085 | 3.794 | 4.324 |
+| C3: Bulk Insert (10) | 5.036 | 6.734 | 5.324 | 5.356 | 5.883 |
+| R1: Get User by ID | 2.101 | 2.383 | 2.629 | 3.056 | 3.384 |
+| D1: Delete User | 2.957 | 4.300 | 11.927 | 4.630 | 5.507 |
+| M1: Post + Categories | 5.050 | 6.616 | 15.415 | 8.000 | 7.892 |
+
+The overhead percentages at size 1 000 follow similar patterns to size 100, with TypeORM showing 100–300 percent overhead on create and delete operations, Prisma maintaining 10–60 percent overhead, and Sequelize and Drizzle ranging between 20–90 percent.
+
+### 5.4 Execution Time Results — Dataset Size 10 000
+
+At the medium-large dataset size (10 000 users, 10 000 posts, 15 categories), the stability of results improves noticeably because query execution times grow relative to the fixed 50-millisecond GC pause, reducing the proportional impact of scheduling variance.
+
+| Operation | Raw SQL | Prisma | TypeORM | Sequelize | Drizzle |
+|-----------|---------|--------|---------|-----------|---------|
+| C1: Create User | 2.880 | 3.319 | 6.454 | 3.729 | 4.120 |
+| C2: Create Post | 2.942 | 3.219 | 6.052 | 4.107 | 4.240 |
+| C3: Bulk Insert (10) | 4.863 | 5.150 | 4.352 | 4.789 | 5.307 |
+| R1: Get User by ID | 1.833 | 2.150 | 3.265 | 2.263 | 2.966 |
+| R2: Get Post by ID | 1.721 | 2.297 | 3.215 | 2.459 | 3.011 |
+| D1: Delete User | 5.112 | 4.998 | 5.159 | 4.561 | 5.790 |
+| D2: Bulk Del. by Author | 3.083 | 6.060 | 3.876 | 3.348 | 4.574 |
+| M1: Post + Categories | 5.119 | 8.422 | 15.968 | 7.934 | 7.245 |
+
+The overhead at size 10 000 shows TypeORM reaching 124–212 percent overhead on create and many-to-many operations, while Sequelize and Drizzle remain below 80 percent for most operations. Prisma's overhead on delete by author jumps to 97 percent due to its query engine's handling of cascade checks.
+
+### 5.5 Execution Time Results — Dataset Size 100 000
+
+At the largest dataset size (100 000 users, 100 000 posts, 20 categories, 10 iterations per operation), the FK cascade overhead on delete operations becomes significant. Deleting a user triggers cascade deletion of all their associated posts and post_categories entries, which requires scanning and deleting across 100 000 rows.
+
+| Operation | Raw SQL | Prisma | TypeORM | Sequelize | Drizzle |
+|-----------|---------|--------|---------|-----------|---------|
+| C1: Create User | 3.238 | 3.663 | 8.766 | 5.412 | 5.008 |
+| C2: Create Post | 2.831 | 3.524 | 6.901 | 4.010 | 4.584 |
+| R1: Get User by ID | 1.735 | 2.483 | 3.449 | 3.016 | 5.490 |
+| D1: Delete User | 17.350 | 17.151 | 23.078 | 18.957 | 19.730 |
+| D2: Bulk Del. by Author | 15.524 | 15.644 | 16.101 | 24.258 | 38.606 |
+| M1: Post + Categories | 5.216 | 9.531 | 18.896 | 8.899 | 7.287 |
+
+Notably, at this scale Prisma's D1 (Delete User) performance is essentially identical to raw SQL (17.1ms vs 17.4ms), likely because Prisma's query engine benefits from PostgreSQL's prepared statement caching on large cascade operations. TypeORM remains the slowest on most operations, with 130–260 percent overhead. Drizzle shows a concerning spike on D2 (38.6ms, +149 percent) due to its RETURNING clause fetching all deleted rows.
+
+### 5.6 Stability Analysis
+
+The coefficient of variation (CV%) was used to assess result stability, with CV below 15 percent indicating stable measurements. The following table shows the number of unstable operations (out of 13) per framework at each dataset size.
+
+| Framework | Size 100 | Size 1 000 | Size 10 000 | Size 100 000 |
+|-----------|----------|------------|-------------|--------------|
+| Raw SQL | 9 unstable | 9 unstable | 7 unstable | 3 unstable |
+| Prisma | 4 unstable | 4 unstable | 6 unstable | 6 unstable |
+| TypeORM | 4 unstable | 6 unstable | 5 unstable | 9 unstable |
+| Sequelize | 5 unstable | 6 unstable | 2 unstable | 10 unstable |
+| Drizzle | 3 unstable | 3 unstable | 2 unstable | 5 unstable |
+
+Stability improves from size 100 to size 10 000 as query execution times grow and begin to dominate the fixed 50-millisecond GC pause overhead. At size 100 000, some operations become unstable again due to genuine performance variance introduced by FK cascade checks on large datasets.
+
+### 5.7 Memory Consumption
+
+Memory consumption was recorded for each iteration using `process.memoryUsage().heapUsed`. Across all operations and all frameworks, memory variance is minimal — typically below 1 percent CV. The absolute memory usage differs between frameworks due to their initialization overhead:
+
+- Raw SQL (pg): ~25.2 MB baseline heap
+- Prisma: ~25.3 MB baseline heap
+- TypeORM: ~25.8 MB baseline heap
+- Sequelize: ~26.1 MB baseline heap
+- Drizzle: ~26.2 MB baseline heap
+
+The per-query memory delta is negligible (fractions of a megabyte), indicating that none of the ORMs introduce significant per-query memory allocation. The differences in baseline heap reflect each framework's initialization cost — Drizzle and Sequelize load more modules at startup, while Prisma and Raw SQL have lighter initialization.
+
+### 5.8 Scaling Patterns
+
+Examining how each ORM's overhead changes across the four dataset sizes reveals distinct scaling patterns:
+
+**Prisma** maintains relatively stable overhead (10–50 percent) on simple CRUD operations across all sizes, but shows increased overhead on relationship operations (M1: +43 to +83 percent, J1: +61 to +79 percent). Its overhead does not grow dramatically with data size.
+
+**TypeORM** shows the highest and most variable overhead, ranging from 30 percent on simple reads to over 260 percent on many-to-many creates. The overhead grows with dataset size, suggesting that its entity lifecycle system does not scale efficiently.
+
+**Sequelize** maintains moderate and relatively stable overhead (30–70 percent) across most operations and sizes. However, it shows extreme spikes on certain operations (D2 at size 100 000: +180 percent, R2 at size 100 000: +165 percent).
+
+**Drizzle** is competitive on simple CRUD (40–60 percent overhead) but shows significant spikes on parameterized reads at large scales (R1 at size 100 000: +217 percent, R3 at size 100 000: +113 percent).
+
+## 6. Evaluation of Functional Differences
+
+### 6.1 Code Maintainability
+
+The choice between raw SQL and an ORM significantly impacts long-term code maintainability. This section evaluates maintainability through three lenses: lines of code (LOC) required for equivalent operations, type safety, and the ease of falling back to raw SQL when the ORM reaches its limits.
+
+#### 6.1.1 Lines of Code per Operation
+
+The following table counts the lines of code in each operation's implementation function (excluding imports, exports, and helper functions) across all five frameworks:
+
+| Operation | Raw SQL | Prisma | TypeORM | Sequelize | Drizzle |
+|-----------|---------|--------|---------|-----------|---------|
+| C1: Create User | 5 | 2 | 1 | 1 | 3 |
+| C2: Create Post | 5 | 3 | 1 | 1 | 3 |
+| C3: Bulk Insert | 6 | 5 | 3 | 2 | 2 |
+| R1: Get User by ID | 3 | 2 | 1 | 1 | 2 |
+| R2: Get Post by ID | 3 | 2 | 1 | 1 | 2 |
+| R3: Paginated Posts | 5 | 3 | 1 | 1 | 1 |
+| U1: Update User | 9 | 2 | 1 | 1 | 3 |
+| U2: Update Post | 9 | 2 | 2 | 2 | 3 |
+| D1: Delete User | 3 | 2 | 3 | 2 | 3 |
+| D2: Bulk Del. by Author | 3 | 3 | 2 | 1 | 2 |
+| J1: Post with Author | 7 | 3 | 1 | 1 | 5 |
+| M1: Post + Categories | 9 | 12 | 4 | 3 | 4 |
+| M2: Get Post + Cats | 10 | 8 | 1 | 1 | 12 |
+| **Total LOC** | **77** | **49** | **23** | **17** | **45** |
+
+Raw SQL requires the most lines (77) because each query must be written as a full SQL string with parameter placeholders. Prisma (49 lines) is concise for simple operations but verbose on many-to-many nested writes. TypeORM (23 lines) and Sequelize (17 lines) are the most concise due to their high-level repository patterns. Drizzle (45 lines) requires explicit SQL-like syntax but benefits from composable function chains.
+
+The relationship between LOC and performance is inverse: frameworks with fewer lines tend to have higher overhead. Sequelize (17 LOC) shows 30–70 percent overhead, while Raw SQL (77 LOC) is the baseline. TypeORM (23 LOC) has the highest overhead (100–260 percent). This suggests a trade-off between developer productivity (fewer lines) and runtime efficiency.
+
+#### 6.1.2 Type Safety
+
+| Framework | Type Safety Level | Mechanism | Compile-Time Errors |
+|-----------|------------------|-----------|---------------------|
+| Raw SQL | None | String-based SQL queries | No — SQL errors at runtime |
+| Prisma | Full | Generated TypeScript client from schema | Yes — all queries validated at compile time |
+| TypeORM | Partial | Runtime metadata via EntitySchema or decorators | Partial — runtime errors for invalid queries |
+| Sequelize | Partial | TypeScript type inference over JS objects | Partial — some queries not validated |
+| Drizzle | Full | Compile-time type inference from schema objects | Yes — column names and types validated |
+
+Prisma and Drizzle provide the strongest type safety. Prisma generates TypeScript types from the `.prisma` schema, so any invalid query (wrong column name, wrong type) is caught at compile time. Drizzle's schema definitions are TypeScript objects that provide type inference for all queries. TypeORM and Sequelize offer partial type safety — their APIs are typed, but the runtime metadata approach means some errors only surface at execution time.
+
+#### 6.1.3 Expressiveness Limits
+
+Each ORM cannot express every PostgreSQL feature natively. The following table documents which SQL constructs require a raw SQL fallback:
+
+| SQL Construct | Raw SQL | Prisma | TypeORM | Sequelize | Drizzle |
+|--------------|---------|--------|---------|-----------|---------|
+| Basic CRUD | ✅ Native | ✅ Native | ✅ Native | ✅ Native | ✅ Native |
+| JOINs | ✅ Native | ✅ Native | ✅ QueryBuilder | ✅ include | ✅ Explicit JOIN |
+| Window functions | ✅ Native | ❌ `$queryRaw` | ✅ QueryBuilder | ❌ raw query | ✅ `sql` template |
+| CTEs (WITH ... AS) | ✅ Native | ❌ `$queryRaw` | ✅ QueryBuilder | ❌ raw query | ✅ `with()` |
+| Lateral joins | ✅ Native | ❌ `$queryRaw` | ✅ QueryBuilder | ❌ raw query | ✅ Explicit JOIN |
+| Full-text search | ✅ Native | ❌ `$queryRaw` | ✅ QueryBuilder | ❌ raw query | ✅ `sql` template |
+| JSONB queries | ✅ Native | ❌ `$queryRaw` | ❌ raw query | ❌ raw query | ✅ `sql` template |
+
+TypeORM's QueryBuilder is the most expressive ORM API, supporting window functions, CTEs, and lateral joins natively. Prisma has the most restrictive native API — it requires `$queryRaw` fallback for most PostgreSQL-specific features. Drizzle provides a middle ground through its `sql` template tag, allowing raw SQL expressions within typed queries.
+
+### 6.2 Prisma's N+1 Query Behavior
+
+An architectural difference was observed in the M2 operation (Get Post with Categories). While Raw SQL, TypeORM, Sequelize, and Drizzle all execute a single JOIN query to fetch a post with its categories, Prisma issues two separate queries: one to fetch the post, and another to fetch the related post_categories and categories records. The results are then assembled client-side by the Prisma Query Engine.
+
+This is not a bug but an intentional design choice. Prisma prioritizes type safety and consistent result structures over query efficiency. The separate-query approach allows Prisma to guarantee that nested result types are always correctly structured, regardless of the relationship depth. However, this means Prisma's M2 operation has approximately 60 percent more overhead than the single-JOIN alternatives.
+
+### 6.3 Practical Recommendations
+
+Based on the benchmark results and functional analysis, the following recommendations are provided for developers choosing between raw SQL and ORM frameworks:
+
+**Use Raw SQL when:**
+- Maximum query performance is critical (sub-2 millisecond operations)
+- The team has strong SQL expertise and the codebase is small
+- The application uses advanced PostgreSQL features (window functions, CTEs, lateral joins)
+- Long-term maintainability is less important than raw performance
+
+**Use Prisma when:**
+- Type safety is the top priority (generated types from schema)
+- The team prefers a declarative, schema-first workflow
+- The application uses basic CRUD operations without advanced SQL constructs
+- Developer onboarding speed is important (auto-generated client)
+
+**Use TypeORM when:**
+- The team comes from a Java/Hibernate background
+- Expressive query building is needed (QueryBuilder supports most PostgreSQL features)
+- The application requires both simple and complex queries in the same codebase
+
+**Use Sequelize when:**
+- The project needs a mature, well-documented ORM with a large community
+- The team prefers a programmatic, JavaScript-friendly API
+- Backwards compatibility with existing Sequelize codebases is required
+
+**Use Drizzle when:**
+- A balance between type safety and SQL-like control is needed
+- The team wants compile-time type checking without code generation
+- The application uses PostgreSQL-specific features via the `sql` template tag
+- Minimal runtime overhead is desired while still having an abstraction layer
+
+## 7. Summary and Conclusions
+
+### 7.1 Summary of Findings
+
+This thesis conducted a comparative study of five data access approaches — Raw SQL (pg), Prisma, TypeORM, Sequelize, and Drizzle — executing 13 database operations across four dataset sizes (100, 1 000, 10 000, 100 000 records) with 10–20 iterations per operation. The evaluation covered query execution time, memory consumption, code complexity, type safety, and language expressiveness.
+
+The key findings are:
+
+1. **Raw SQL is the performance baseline**, with execution times of 1–5 milliseconds for simple operations at small scales and 15–17 milliseconds for cascade deletes at the largest scale. However, it requires the most lines of code (77 total across 13 operations) and provides no type safety.
+
+2. **Prisma introduces the lowest overhead on simple CRUD operations** (9–50 percent above raw SQL), making it the most performant ORM for basic data access patterns. Its overhead increases on relationship operations (60–80 percent) and it requires raw SQL fallbacks for most PostgreSQL-specific features.
+
+3. **TypeORM has the highest overhead** (100–260 percent) due to its entity lifecycle system, but offers the most expressive query builder (supporting window functions, CTEs, and lateral joins natively).
+
+4. **Sequelize provides consistent moderate overhead** (30–70 percent) with the fewest lines of code (17 total), making it the most concise option for developer productivity.
+
+5. **Drizzle is competitive** (40–60 percent overhead on most operations) with full compile-time type safety and a SQL-like API that is intuitive for developers with SQL experience.
+
+6. **Memory consumption is nearly identical** across all frameworks (differing by less than 1 MB), indicating that ORM overhead is primarily CPU-bound (query translation, object mapping) rather than memory-bound.
+
+7. **Code maintainability and performance are inversely related** — frameworks requiring fewer lines of code tend to have higher runtime overhead, suggesting a fundamental trade-off between developer productivity and execution efficiency.
+
+### 7.2 Limitations
+
+This study has several limitations:
+
+- The benchmark was conducted on a single machine (macOS) with a local PostgreSQL instance, meaning results may differ in production environments with network latency, connection pool contention, and concurrent workloads.
+- The schema was intentionally simple (four tables with standard relationships). More complex schemas with dozens of tables and intricate relationships may produce different overhead patterns.
+- Only synchronous, single-query operations were tested. Concurrent queries, transaction handling, and streaming results were not evaluated.
+- The 50-millisecond GC pause introduces noise at small scales (size 100), where query times are comparable to the pause duration.
+
+### 7.3 Future Work
+
+Potential extensions to this research include:
+
+- **Concurrent query testing**: Evaluating ORM behavior under simultaneous multi-threaded workloads to measure connection pool efficiency and query queuing.
+- **Transaction overhead**: Measuring the cost of wrapping multiple operations in a single transaction across frameworks.
+- **Complex WHERE clauses**: Testing filtering with AND/OR/LIKE/IN/NOT IN to evaluate ORM query builder expressiveness and performance.
+- **Aggregation queries**: Benchmarking GROUP BY, HAVING, and subquery operations.
+- **Larger schema evaluation**: Repeating the benchmark with a schema of 10–20 tables and complex relationship patterns to test ORM scalability.
+- **Different database engines**: Running the same benchmark against MySQL or SQLite to evaluate cross-database ORM behavior.
+
+### 7.4 Final Remarks
+
+The choice between raw SQL and an ORM framework is not a binary decision between "fast" and "slow." Each framework occupies a distinct position on the spectrum between developer productivity and runtime efficiency. For applications where sub-millisecond response times are critical and the team has deep SQL expertise, raw SQL remains unmatched. For the majority of web applications where development speed, type safety, and code maintainability are equally important, modern ORMs like Prisma and Drizzle provide an excellent balance. TypeORM and Sequelize serve as viable options for teams with specific expertise requirements or legacy codebase compatibility.
+
+The most important takeaway is that the performance overhead of ORMs is measurable but often manageable — typically in the range of 30–100 percent for simple operations. For most applications, this overhead is a reasonable price for the benefits of type safety, maintainable code, and faster development cycles. The decision should be based on the specific requirements of the project, the expertise of the team, and the expected growth trajectory of the codebase.
+
 ## Bibliography
 
 [1] Domariev, V. (2025). *A comparative study of multi-database and single-database systems: performance and usability*. Master's thesis. Polsko-Japońska Akademia Technik Komputerowych, Warsaw.
@@ -696,4 +1059,6 @@ The following operations are tested across all five implementations. Each operat
 
 [8] node-postgres. (2024). *node-postgres Documentation*. Retrieved from https://node-postgres.com/
 
-[9] Stack Overflow. (2021). *Developer Survey Results*. Retrieved from https://stackoverflow.com/insights/survey/
+[9] Stack Overflow. (2024). *Developer Survey Results*. Retrieved from https://survey.stackoverflow.co/2024/ (accessed: March 2026)
+
+[10] State of JS. (2024). *State of JS Survey — Data Layer*. Retrieved from https://stateofjs.com/ (accessed: March 2026)

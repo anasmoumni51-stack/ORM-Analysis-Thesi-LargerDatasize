@@ -11,7 +11,7 @@ CREATE TABLE posts (
   content TEXT,
   published BOOLEAN DEFAULT FALSE,
   views INTEGER DEFAULT 0,
-  author_id INTEGER REFERENCES users(id),
+  author_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   created_at TIMESTAMP DEFAULT NOW()
 );
 

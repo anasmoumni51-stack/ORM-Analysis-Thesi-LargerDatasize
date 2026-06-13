@@ -1,6 +1,7 @@
 const { Sequelize, DataTypes } = require('sequelize');
 
 const { DATABASE_URL } = require('../config');
+const queryLogger = require('../query-logger');
 
 let sequelize;
 let User, Post, Category, PostCategory;
@@ -10,21 +11,22 @@ async function init() {
 
   sequelize = new Sequelize(DATABASE_URL, {
     dialect: 'postgres',
-    logging: false,
+    logging: process.env.QUERY_LOG ? (sql) => queryLogger.log('sequelize', sql) : false,
+    pool: { max: 10, min: 0 },
   });
 
   await sequelize.authenticate();
 
   User = sequelize.define('users', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    username: { type: DataTypes.STRING, allowNull: false },
-    email: { type: DataTypes.STRING, allowNull: false },
+    username: { type: DataTypes.STRING(50), allowNull: false },
+    email: { type: DataTypes.STRING(100), allowNull: false },
     created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   }, { tableName: 'users', timestamps: false });
 
   Post = sequelize.define('posts', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    title: { type: DataTypes.STRING, allowNull: false },
+    title: { type: DataTypes.STRING(200), allowNull: false },
     content: { type: DataTypes.TEXT, allowNull: true },
     published: { type: DataTypes.BOOLEAN, defaultValue: false },
     views: { type: DataTypes.INTEGER, defaultValue: 0 },
@@ -34,7 +36,7 @@ async function init() {
 
   Category = sequelize.define('categories', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING, allowNull: false },
+    name: { type: DataTypes.STRING(50), allowNull: false },
   }, { tableName: 'categories', timestamps: false });
 
   PostCategory = sequelize.define('post_categories', {
@@ -62,22 +64,8 @@ async function createUser(username, email) {
   return User.create({ username, email });
 }
 
-async function createPost(title, content, published, views, author_id) {
-  return Post.create({ title, content, published, views, author_id });
-}
-
-async function bulkInsertPosts(postsArray) {
-  // Sequelize's bulkCreate does a single INSERT INTO ... VALUES (...), (...) statement
-  // This is correct per the spec — it just had high CV due to pool jitter, now fixed
-  return Post.bulkCreate(postsArray);
-}
-
 async function getUserById(id) {
   return User.findByPk(id);
-}
-
-async function getPostById(id) {
-  return Post.findByPk(id);
 }
 
 async function getPaginatedPosts(offset, limit) {
@@ -98,25 +86,16 @@ async function getPostWithCategories(id) {
   return Post.findByPk(id, { include: [{ model: Category }] });
 }
 
-async function updateUser(id, data) {
-  return User.update(data, { where: { id } });
+async function bulkInsertPosts(postList) {
+  return Post.bulkCreate(postList);
 }
 
-async function updatePost(id, data) {
-  return Post.update(data, { where: { id } });
+async function updateUser(id, data) {
+  return User.update(data, { where: { id } });
 }
 
 async function deleteUser(id) {
   return (await User.destroy({ where: { id } })) > 0;
 }
 
-async function deletePost(id) {
-  return (await Post.destroy({ where: { id } })) > 0;
-}
-
-// D2: Bulk delete posts by author_id
-async function deletePostsByAuthor(authorId) {
-  return Post.destroy({ where: { author_id: authorId } });
-}
-
-module.exports = { init, close, warmQuery, createUser, createPost, bulkInsertPosts, getUserById, getPostById, getPaginatedPosts, getPostWithAuthor, createPostWithCategories, getPostWithCategories, updateUser, updatePost, deleteUser, deletePost, deletePostsByAuthor };
+module.exports = { init, close, warmQuery, createUser, getUserById, getPaginatedPosts, getPostWithAuthor, createPostWithCategories, getPostWithCategories, bulkInsertPosts, updateUser, deleteUser };

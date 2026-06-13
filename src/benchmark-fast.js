@@ -15,6 +15,11 @@ const path = require('path');
 const { DATASET_SIZES } = require('./config');
 const { computeStats, computeOverhead } = require('./stats');
 
+require('ts-node/register');
+const { Pool } = require('pg');
+const { DATABASE_URL } = require('./config');
+const pool = new Pool({ connectionString: DATABASE_URL, max: 10 });
+
 const rawSql = require('./db/raw-sql');
 const prisma = require('./db/prisma');
 const typeorm = require('./db/typeorm');
@@ -22,7 +27,7 @@ const sequelizeDb = require('./db/sequelize');
 const drizzleDb = require('./db/drizzle');
 
 const FRAMEWORKS = {
-  rawsql: { module: rawSql, init: () => rawSql.init(), warmQuery: () => rawSql.warmQuery(), close: () => rawSql.close() },
+  rawsql: { module: rawSql, init: () => rawSql.init(pool), warmQuery: () => rawSql.warmQuery(), close: () => rawSql.close() },
   prisma: { module: prisma, init: () => prisma.init(), warmQuery: () => prisma.warmQuery(), close: () => prisma.close() },
   typeorm: { module: typeorm, init: () => typeorm.init(), warmQuery: () => typeorm.warmQuery(), close: () => typeorm.close() },
   sequelize: { module: sequelizeDb, init: () => sequelizeDb.init(), warmQuery: () => sequelizeDb.warmQuery(), close: () => sequelizeDb.close() },
@@ -53,7 +58,7 @@ async function benchmark(fn, iterations) {
 // ─── FAST SEEDING using generate_series() ────────────────────────────────────
 
 async function fastClearTables() {
-  await rawSql.query('TRUNCATE TABLE post_categories, posts, categories, users RESTART IDENTITY CASCADE');
+  await pool.query('TRUNCATE TABLE post_categories, posts, categories, users RESTART IDENTITY CASCADE');
 }
 
 async function fastSeedCategories(n) {
@@ -61,12 +66,12 @@ async function fastSeedCategories(n) {
   for (let i = 1; i <= n; i++) {
     values.push(`('cat_${i}')`);
   }
-  await rawSql.query(`INSERT INTO categories (name) VALUES ${values.join(', ')}`);
+  await pool.query(`INSERT INTO categories (name) VALUES ${values.join(', ')}`);
 }
 
 async function fastSeedUsers(n) {
   // generate_series() — single query, no string building for 100k rows
-  await rawSql.query(
+  await pool.query(
     `INSERT INTO users (username, email)
      SELECT 'user_' || i, 'user_' || i || '@test.com'
      FROM generate_series(1, $1) AS i`,
@@ -77,10 +82,10 @@ async function fastSeedUsers(n) {
 async function fastSeedPosts(n) {
   // Insert n posts with round-robin author_id across all users
   // $1 = number of users, $2 = number of posts
-  const userRes = await rawSql.query('SELECT COUNT(*) FROM users');
+  const userRes = await pool.query('SELECT COUNT(*) FROM users');
   const userCount = parseInt(userRes.rows[0].count);
 
-  await rawSql.query(
+  await pool.query(
     `INSERT INTO posts (title, content, published, views, author_id)
      SELECT
        'Post ' || i,
@@ -102,30 +107,15 @@ async function fastSeed(size) {
 
 async function seedRawFast(size) {
   await fastSeed(size);
-  const res = await rawSql.query('SELECT COALESCE(MAX(id), 1) as last_id FROM users');
+  const res = await pool.query('SELECT COALESCE(MAX(id), 1) as last_id FROM users');
   return { userId: parseInt(res.rows[0].last_id) || 1 };
 }
 
-// ─── Pre-seed delete targets using generate_series() ─────────────────────────
-
-async function seedDeleteTargetsFast(count, offset = 0) {
-  const result = await rawSql.query(
-    `INSERT INTO posts (title, content, published, views, author_id)
-     SELECT
-       'del_target_' || ($2 + i),
-       'delete_content',
-       false,
-       0,
-       1
-     FROM generate_series(1, $1) AS i
-     RETURNING id`,
-    [count, offset]
-  );
-  return result.rows.map(r => r.id);
-}
+// ─── Pre-seed delete targets for D1 using generate_series() ──────────────────
+// Creates users WITH posts so ON DELETE CASCADE fires on deleteUser()
 
 async function seedUserDeleteTargetsFast(count, offset = 0) {
-  const result = await rawSql.query(
+  const userResult = await pool.query(
     `INSERT INTO users (username, email)
      SELECT
        'del_user_' || ($2 + i),
@@ -134,25 +124,38 @@ async function seedUserDeleteTargetsFast(count, offset = 0) {
      RETURNING id`,
     [count, offset]
   );
-  return result.rows.map(r => r.id);
+  const userIds = userResult.rows.map(r => parseInt(r.id));
+
+  // Create 5 posts per user so cascade has work to do
+  const values = [];
+  for (const userId of userIds) {
+    for (let p = 1; p <= 5; p++) {
+      values.push(`('cascade_post', 'cascade_content', false, 0, ${userId})`);
+    }
+  }
+  if (values.length > 0) {
+    await pool.query(`INSERT INTO posts (title, content, published, views, author_id) VALUES ${values.join(', ')}`);
+  }
+
+  return userIds;
 }
 
-// ─── Define each operation per framework (IDENTICAL to benchmark.js) ─────────
+// ─── Define each operation per framework (7 thesis operations) ───────────────
 
 const OPERATIONS = {
   C1: {
     name: 'Create User',
     run: (db, ctx) => db.createUser(`u_${ctx.iter}`, `u_${ctx.iter}@test.com`),
   },
-  C2: {
-    name: 'Create Post',
-    run: (db, ctx) => db.createPost(`Post ${ctx.globalIter}`, `Content ${ctx.globalIter}`, false, 0, ctx.userId),
-  },
   C3: {
-    name: 'Bulk Insert Posts (10)',
+    name: 'Bulk Insert Posts',
     run: (db, ctx) => {
       const posts = Array.from({ length: 10 }, (_, i) => ({
-        title: `Bulk_${ctx.globalIter}_${i}`, content: `Bulk ${ctx.globalIter}`, published: false, views: 0, author_id: ctx.userId,
+        title: `bulk_${ctx.globalIter}_${i}`,
+        content: `Bulk content ${i}`,
+        published: false,
+        views: 0,
+        author_id: ctx.userId,
       }));
       return db.bulkInsertPosts(posts);
     },
@@ -160,10 +163,6 @@ const OPERATIONS = {
   R1: {
     name: 'Get User By ID',
     run: (db, ctx) => db.getUserById(ctx.userId),
-  },
-  R2: {
-    name: 'Get Post By ID',
-    run: (db, ctx) => db.getPostById(ctx.postId),
   },
   R3: {
     name: 'Get Paginated Posts',
@@ -173,10 +172,6 @@ const OPERATIONS = {
     name: 'Update User',
     run: (db, ctx) => db.updateUser(ctx.userId, { email: `updated_${ctx.iter}@test.com` }),
   },
-  U2: {
-    name: 'Update Post',
-    run: (db, ctx) => db.updatePost(ctx.postId, { title: `Updated Title`, views: 999 }),
-  },
   D1: {
     name: 'Delete User',
     destructive: true,
@@ -185,11 +180,6 @@ const OPERATIONS = {
       const id = ids[ctx.iter];
       return db.deleteUser(id);
     },
-  },
-  D2: {
-    name: 'Bulk Delete Posts by Author',
-    destructive: true,
-    run: (db, ctx) => db.deletePostsByAuthor(ctx.userId),
   },
   J1: {
     name: 'Get Post With Author',
@@ -201,10 +191,6 @@ const OPERATIONS = {
       { title: `CatPost_${ctx.globalIter}`, content: `Cat content`, published: false, views: 0, author_id: ctx.userId },
       ctx.categoryIds
     ),
-  },
-  M2: {
-    name: 'Get Post With Categories',
-    run: (db, ctx) => db.getPostWithCategories(ctx.postId),
   },
 };
 
@@ -238,10 +224,10 @@ async function runAll() {
     const seedStart = Date.now();
     console.log(`Seeding ${size.label} rows (generate_series)...`);
     const baseCtx = await seedRawFast(size);
-    const catRes = await rawSql.query('SELECT id FROM categories ORDER BY id');
+    const catRes = await pool.query('SELECT id FROM categories ORDER BY id');
     baseCtx.categoryIds = catRes.rows.slice(0, 3).map(r => parseInt(r.id));
     baseCtx.offset = 0;
-    const firstPost = await rawSql.query('SELECT COALESCE(MIN(id), 1) as id FROM posts');
+    const firstPost = await pool.query('SELECT COALESCE(MIN(id), 1) as id FROM posts');
     baseCtx.postId = parseInt(firstPost.rows[0].id) || 1;
     console.log(`  Seeded in ${((Date.now() - seedStart) / 1000).toFixed(1)}s`);
 
@@ -249,14 +235,10 @@ async function runAll() {
     console.log('  Seeding delete targets...');
     const numFrameworks = Object.keys(FRAMEWORKS).length;
     baseCtx.deleteUserIdLists = [];
-    baseCtx.deletePostIdLists = [];
     for (let fw = 0; fw < numFrameworks; fw++) {
       const offset = fw * size.iterations;
       baseCtx.deleteUserIdLists.push(
         await seedUserDeleteTargetsFast(size.iterations, offset)
-      );
-      baseCtx.deletePostIdLists.push(
-        await seedDeleteTargetsFast(size.iterations, offset)
       );
     }
 
@@ -273,13 +255,11 @@ async function runAll() {
           for (const [fwName] of Object.entries(FRAMEWORKS)) {
             const fw = FRAMEWORKS[fwName];
             const deleteUserIds = baseCtx.deleteUserIdLists[warmFwIdx] || [];
-            const deletePostIds = baseCtx.deletePostIdLists[warmFwIdx] || [];
             const warmGlobalIter = warmFwIdx * 3 + warmIdx;
             try {
               await op.run(fw.module, {
                 ...baseCtx,
                 deleteUserIds,
-                deletePostIds,
                 iter: warmIdx,
                 globalIter: warmGlobalIter,
               });
@@ -299,16 +279,14 @@ async function runAll() {
         // Re-seed delete targets for all frameworks
         for (let fw = 0; fw < numFrameworks; fw++) {
           const offset = fw * size.iterations;
-          const postIds = await seedDeleteTargetsFast(size.iterations, offset);
           const userIds = await seedUserDeleteTargetsFast(size.iterations, offset);
           baseCtx.deleteUserIdLists[fw] = userIds;
-          baseCtx.deletePostIdLists[fw] = postIds;
         }
 
         // Re-lookup base context IDs
-        const res = await rawSql.query('SELECT COALESCE(MAX(id), 1) as last_id FROM users');
+        const res = await pool.query('SELECT COALESCE(MAX(id), 1) as last_id FROM users');
         baseCtx.userId = parseInt(res.rows[0].last_id) || 1;
-        const fp = await rawSql.query('SELECT COALESCE(MIN(id), 1) as id FROM posts');
+        const fp = await pool.query('SELECT COALESCE(MIN(id), 1) as id FROM posts');
         baseCtx.postId = parseInt(fp.rows[0].id) || 1;
       }
 
@@ -323,12 +301,10 @@ async function runAll() {
 
         // Get per-framework pre-seeded delete targets
         const deleteUserIds = baseCtx.deleteUserIdLists[fwIdx] || [];
-        const deletePostIds = baseCtx.deletePostIdLists[fwIdx] || [];
 
         const fwCtx = {
           ...baseCtx,
           deleteUserIds,
-          deletePostIds,
         };
         const thisGlobalIter = globalIter;
 
@@ -359,16 +335,14 @@ async function runAll() {
         // Re-seed delete targets for all remaining frameworks
         for (let fw = 0; fw < numFrameworks; fw++) {
           const offset = fw * size.iterations;
-          const postIds = await seedDeleteTargetsFast(size.iterations, offset);
           const userIds = await seedUserDeleteTargetsFast(size.iterations, offset);
           baseCtx.deleteUserIdLists[fw] = userIds;
-          baseCtx.deletePostIdLists[fw] = postIds;
         }
 
         // Re-lookup base context IDs
-        const res = await rawSql.query('SELECT COALESCE(MAX(id), 1) as last_id FROM users');
+        const res = await pool.query('SELECT COALESCE(MAX(id), 1) as last_id FROM users');
         baseCtx.userId = parseInt(res.rows[0].last_id) || 1;
-        const fp = await rawSql.query('SELECT COALESCE(MIN(id), 1) as id FROM posts');
+        const fp = await pool.query('SELECT COALESCE(MIN(id), 1) as id FROM posts');
         baseCtx.postId = parseInt(fp.rows[0].id) || 1;
 
         globalIter += size.iterations;
@@ -403,6 +377,7 @@ async function runAll() {
   for (const [fwName] of Object.entries(FRAMEWORKS)) {
     await FRAMEWORKS[fwName].close();
   }
+  await pool.end();
 
   const elapsed = ((Date.now() - t0) / 1000).toFixed(0);
   console.log(`\nBenchmark complete. Total time: ${elapsed}s`);

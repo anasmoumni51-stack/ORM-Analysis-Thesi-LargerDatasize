@@ -1,0 +1,426 @@
+
+================================================================================
+Dataset Size: 100
+================================================================================
+
+┌─ Execution Time (ms) — Mean (CV%) — Merged from 3 runs
+
+Operation                                        rawsql         prisma        typeorm      sequelize        drizzle
+-------------------------------------------------------------------------------------------------------------------
+C1: Create User                             3.1 (15.7%)    4.2 (11.7%)    7.0 (13.9%)    4.7 (15.2%)    5.0 (13.2%)
+C2: Create Post                             4.1 (14.5%)    4.3 (17.5%)    6.8 (12.3%)    4.9 (13.3%)    5.2 (12.4%)
+C3: Bulk Insert Posts (10)                  4.4 (11.5%)     6.2 (8.4%)    5.5 (25.3%)    5.0 (23.0%)    5.5 (14.2%)
+D1: Delete User                             3.8 (17.0%)    4.4 (15.0%)    4.3 (16.3%)     4.0 (7.6%)    4.8 (18.5%)
+D2: Bulk Delete Posts by Author             1.7 (13.2%)    2.6 (17.3%)    2.5 (19.0%)    2.4 (10.2%)    3.2 (11.8%)
+J1: Get Post With Author                    2.5 (17.1%)    4.0 (14.8%)     3.6 (9.5%)     3.8 (9.6%)     4.1 (8.7%)
+M1: Create Post With Categories             5.1 (22.5%)     7.7 (6.6%)    14.4 (3.6%)     8.2 (9.8%)     8.5 (6.1%)
+M2: Get Post With Categories                2.8 (15.2%)     3.9 (9.2%)     3.9 (5.2%)    3.8 (14.6%)     4.3 (9.6%)
+R1: Get User By ID                          2.5 (14.9%)    3.1 (10.0%)    3.1 (13.5%)     2.3 (9.2%)     3.0 (7.8%)
+R2: Get Post By ID                          2.3 (15.4%)    2.8 (15.2%)     3.4 (8.3%)    2.7 (12.3%)    3.5 (12.0%)
+R3: Get Paginated Posts                     2.5 (14.0%)     3.0 (8.0%)    3.5 (10.3%)     3.3 (5.2%)    3.7 (12.2%)
+U1: Update User                             2.8 (10.5%)    4.1 (18.6%)    4.3 (13.7%)    4.4 (18.2%)    4.8 (14.4%)
+U2: Update Post                             4.4 (12.2%)    4.0 (13.0%)     4.6 (4.6%)    4.4 (12.8%)    5.1 (10.8%)
+
+┌─ Overhead % vs Raw SQL (based on merged mean execution time)
+
+  prisma:
+    C1: Create User                              34.0%
+    C2: Create Post                               4.9%
+    C3: Bulk Insert Posts (10)                   40.2%
+    D1: Delete User                              14.6%
+    D2: Bulk Delete Posts by Author              48.6%
+    J1: Get Post With Author                     59.1%
+    M1: Create Post With Categories              49.1%
+    M2: Get Post With Categories                 39.6%
+    R1: Get User By ID                           21.7%
+    R2: Get Post By ID                           21.7%
+    R3: Get Paginated Posts                      21.2%
+    U1: Update User                              47.6%
+    U2: Update Post                              -8.1%
+
+  typeorm:
+    C1: Create User                             124.9%
+    C2: Create Post                              65.9%
+    C3: Bulk Insert Posts (10)                   24.2%
+    D1: Delete User                              13.5%
+    D2: Bulk Delete Posts by Author              42.7%
+    J1: Get Post With Author                     44.9%
+    M1: Create Post With Categories             180.7%
+    M2: Get Post With Categories                 40.7%
+    R1: Get User By ID                           22.6%
+    R2: Get Post By ID                           48.4%
+    R3: Get Paginated Posts                      40.0%
+    U1: Update User                              53.9%
+    U2: Update Post                               4.4%
+
+  sequelize:
+    C1: Create User                              51.1%
+    C2: Create Post                              18.9%
+    C3: Bulk Insert Posts (10)                   13.3%
+    D1: Delete User                               5.9%
+    D2: Bulk Delete Posts by Author              41.2%
+    J1: Get Post With Author                     50.1%
+    M1: Create Post With Categories              60.1%
+    M2: Get Post With Categories                 37.4%
+    R1: Get User By ID                           -7.3%
+    R2: Get Post By ID                           18.5%
+    R3: Get Paginated Posts                      31.0%
+    U1: Update User                              58.6%
+    U2: Update Post                               1.2%
+
+  drizzle:
+    C1: Create User                              59.5%
+    C2: Create Post                              25.6%
+    C3: Bulk Insert Posts (10)                   24.6%
+    D1: Delete User                              25.3%
+    D2: Bulk Delete Posts by Author              83.6%
+    J1: Get Post With Author                     63.8%
+    M1: Create Post With Categories              64.4%
+    M2: Get Post With Categories                 56.0%
+    R1: Get User By ID                           18.5%
+    R2: Get Post By ID                           52.7%
+    R3: Get Paginated Posts                      49.0%
+    U1: Update User                              74.8%
+    U2: Update Post                              15.3%
+
+┌─ Memory Consumption (MB) — Mean (CV%) — Merged
+
+Operation                                        rawsql         prisma        typeorm      sequelize        drizzle
+-------------------------------------------------------------------------------------------------------------------
+C1: Create User                            25.21 (0.1%)   25.31 (0.1%)   25.76 (0.4%)   26.04 (0.2%)   26.20 (0.2%)
+C2: Create Post                            26.24 (0.0%)   26.27 (0.0%)   26.44 (0.0%)   26.47 (0.1%)   26.54 (0.0%)
+C3: Bulk Insert Posts (10)                 26.70 (0.0%)   26.71 (0.0%)   26.99 (0.1%)   27.09 (0.2%)   27.18 (0.0%)
+D1: Delete User                            28.15 (0.0%)   28.16 (0.0%)   28.24 (0.0%)   28.24 (0.0%)   28.27 (0.0%)
+D2: Bulk Delete Posts by Author            28.23 (0.0%)   28.24 (0.0%)   28.32 (0.0%)   28.31 (0.0%)   28.31 (0.0%)
+J1: Get Post With Author                   28.41 (0.0%)   28.44 (0.0%)   28.56 (0.0%)   28.68 (0.1%)   28.68 (0.0%)
+M1: Create Post With Categories            28.71 (0.0%)   28.72 (0.0%)   29.24 (0.1%)   29.05 (0.0%)   28.97 (0.0%)
+M2: Get Post With Categories               28.88 (0.0%)   28.91 (0.0%)   29.00 (0.0%)   29.07 (0.0%)   29.06 (0.0%)
+R1: Get User By ID                         27.18 (0.0%)   27.22 (0.0%)   27.46 (0.3%)   27.57 (0.2%)   27.66 (0.1%)
+R2: Get Post By ID                         27.64 (0.0%)   27.65 (0.0%)   27.72 (0.0%)   27.72 (0.0%)   27.72 (0.0%)
+R3: Get Paginated Posts                    27.74 (0.0%)   27.76 (0.0%)   27.90 (0.0%)   27.93 (0.0%)   27.95 (0.0%)
+U1: Update User                            27.90 (0.0%)   27.90 (0.0%)   28.03 (0.1%)   28.12 (0.1%)   28.12 (0.0%)
+U2: Update Post                            28.10 (0.0%)   28.12 (0.0%)   28.19 (0.0%)   28.22 (0.0%)   28.22 (0.0%)
+
+================================================================================
+Dataset Size: 1000
+================================================================================
+
+┌─ Execution Time (ms) — Mean (CV%) — Merged from 3 runs
+
+Operation                                        rawsql         prisma        typeorm      sequelize        drizzle
+-------------------------------------------------------------------------------------------------------------------
+C1: Create User                             3.0 (12.3%)    3.3 (24.2%)     6.5 (6.8%)     3.8 (9.2%)     5.2 (3.6%)
+C2: Create Post                             3.1 (15.3%)    3.9 (18.4%)     6.9 (7.0%)     3.9 (8.3%)    4.9 (17.1%)
+C3: Bulk Insert Posts (10)                  3.2 (17.9%)    6.7 (22.4%)    5.3 (11.0%)    5.4 (17.1%)    5.9 (29.2%)
+D1: Delete User                             4.2 (15.6%)     8.2 (0.0%)    4.6 (13.4%)     4.3 (5.1%)     5.1 (8.8%)
+D2: Bulk Delete Posts by Author             2.6 (10.3%)    2.6 (10.1%)     3.2 (5.3%)     2.5 (8.8%)    3.4 (10.3%)
+J1: Get Post With Author                    2.8 (10.3%)     4.2 (8.6%)     3.8 (6.0%)    3.8 (26.2%)    3.7 (12.1%)
+M1: Create Post With Categories             6.6 (15.5%)    6.6 (10.0%)    15.4 (7.9%)     8.8 (7.3%)     8.1 (7.0%)
+M2: Get Post With Categories                2.2 (10.8%)    4.3 (10.4%)     3.8 (9.7%)    3.8 (11.7%)     4.2 (9.7%)
+R1: Get User By ID                           2.6 (6.5%)    2.4 (11.4%)    3.2 (11.1%)    3.1 (43.8%)     3.8 (5.9%)
+R2: Get Post By ID                           2.6 (7.8%)    2.4 (14.1%)     3.3 (8.4%)    2.8 (11.5%)     3.8 (8.4%)
+R3: Get Paginated Posts                     2.7 (13.1%)     3.2 (7.2%)     3.5 (7.6%)     3.0 (9.6%)     3.3 (9.2%)
+U1: Update User                              4.5 (6.9%)    4.2 (13.2%)    4.3 (12.9%)     4.6 (5.0%)    4.3 (10.2%)
+U2: Update Post                             3.9 (17.1%)     4.5 (5.0%)     4.8 (3.7%)     4.6 (5.7%)    5.0 (11.7%)
+
+┌─ Overhead % vs Raw SQL (based on merged mean execution time)
+
+  prisma:
+    C1: Create User                               9.7%
+    C2: Create Post                              26.2%
+    C3: Bulk Insert Posts (10)                  107.3%
+    D1: Delete User                              92.5%
+    D2: Bulk Delete Posts by Author               1.5%
+    J1: Get Post With Author                     48.3%
+    M1: Create Post With Categories               0.8%
+    M2: Get Post With Categories                 94.9%
+    R1: Get User By ID                           -9.8%
+    R2: Get Post By ID                           -7.1%
+    R3: Get Paginated Posts                      18.1%
+    U1: Update User                              -5.5%
+    U2: Update Post                              13.6%
+
+  typeorm:
+    C1: Create User                             117.9%
+    C2: Create Post                             120.0%
+    C3: Bulk Insert Posts (10)                   64.6%
+    D1: Delete User                               9.5%
+    D2: Bulk Delete Posts by Author              26.0%
+    J1: Get Post With Author                     32.4%
+    M1: Create Post With Categories             134.8%
+    M2: Get Post With Categories                 74.3%
+    R1: Get User By ID                           20.5%
+    R2: Get Post By ID                           24.9%
+    R3: Get Paginated Posts                      31.1%
+    U1: Update User                              -3.6%
+    U2: Update Post                              21.4%
+
+  sequelize:
+    C1: Create User                              26.5%
+    C2: Create Post                              23.4%
+    C3: Bulk Insert Posts (10)                   64.9%
+    D1: Delete User                               0.8%
+    D2: Bulk Delete Posts by Author              -2.2%
+    J1: Get Post With Author                     32.3%
+    M1: Create Post With Categories              34.3%
+    M2: Get Post With Categories                 73.5%
+    R1: Get User By ID                           15.7%
+    R2: Get Post By ID                            4.7%
+    R3: Get Paginated Posts                       9.6%
+    U1: Update User                               2.5%
+    U2: Update Post                              17.3%
+
+  drizzle:
+    C1: Create User                              74.1%
+    C2: Create Post                              56.4%
+    C3: Bulk Insert Posts (10)                   81.1%
+    D1: Delete User                              20.2%
+    D2: Bulk Delete Posts by Author              30.7%
+    J1: Get Post With Author                     31.9%
+    M1: Create Post With Categories              23.9%
+    M2: Get Post With Categories                 93.1%
+    R1: Get User By ID                           44.0%
+    R2: Get Post By ID                           46.2%
+    R3: Get Paginated Posts                      23.1%
+    U1: Update User                              -4.2%
+    U2: Update Post                              27.7%
+
+┌─ Memory Consumption (MB) — Mean (CV%) — Merged
+
+Operation                                        rawsql         prisma        typeorm      sequelize        drizzle
+-------------------------------------------------------------------------------------------------------------------
+C1: Create User                            28.95 (0.0%)   28.96 (0.0%)   29.07 (0.0%)   29.04 (0.0%)   29.02 (0.0%)
+C2: Create Post                            28.97 (0.0%)   28.99 (0.0%)   29.13 (0.0%)   29.09 (0.0%)   29.07 (0.0%)
+C3: Bulk Insert Posts (10)                 29.07 (0.0%)   29.06 (0.0%)   29.28 (0.0%)   29.27 (0.0%)   29.29 (0.0%)
+D1: Delete User                            29.24 (0.0%)   29.25 (0.0%)   29.32 (0.0%)   29.29 (0.0%)   29.35 (0.3%)
+D2: Bulk Delete Posts by Author            29.34 (0.0%)   29.35 (0.0%)   29.43 (0.0%)   29.40 (0.0%)   29.39 (0.0%)
+J1: Get Post With Author                   29.38 (0.0%)   29.41 (0.0%)   29.49 (0.0%)   29.53 (0.0%)   29.52 (0.0%)
+M1: Create Post With Categories            29.45 (0.0%)   29.45 (0.0%)   29.91 (0.0%)   29.67 (0.0%)   29.57 (0.0%)
+M2: Get Post With Categories               29.45 (0.0%)   29.48 (0.0%)   29.57 (0.0%)   29.61 (0.0%)   29.58 (0.0%)
+R1: Get User By ID                         29.09 (0.0%)   29.10 (0.0%)   29.16 (0.0%)   29.15 (0.0%)   29.15 (0.0%)
+R2: Get Post By ID                         29.09 (0.0%)   29.11 (0.0%)   29.18 (0.0%)   29.16 (0.0%)   29.18 (0.0%)
+R3: Get Paginated Posts                    29.15 (0.0%)   29.15 (0.0%)   29.28 (0.0%)   29.25 (0.0%)   29.25 (0.0%)
+U1: Update User                            29.14 (0.0%)   29.13 (0.0%)   29.19 (0.0%)   29.22 (0.0%)   29.22 (0.0%)
+U2: Update Post                            29.19 (0.0%)   29.21 (0.0%)   29.28 (0.0%)   29.30 (0.0%)   29.30 (0.0%)
+
+================================================================================
+Dataset Size: 10000
+================================================================================
+
+┌─ Execution Time (ms) — Mean (CV%) — Merged from 3 runs
+
+Operation                                        rawsql         prisma        typeorm      sequelize        drizzle
+-------------------------------------------------------------------------------------------------------------------
+C1: Create User                             2.9 (14.5%)    3.3 (14.8%)     6.7 (8.3%)     4.6 (6.1%)    4.1 (10.2%)
+C2: Create Post                              2.9 (8.4%)    3.2 (11.9%)     7.0 (8.9%)    4.5 (14.5%)     5.2 (9.6%)
+C3: Bulk Insert Posts (10)                  4.5 (10.4%)    6.1 (10.4%)    5.6 (14.3%)    4.8 (13.7%)    5.9 (11.1%)
+D1: Delete User                             5.1 (23.7%)     5.7 (8.4%)     5.9 (8.5%)     5.3 (8.7%)    6.3 (10.0%)
+D2: Bulk Delete Posts by Author             3.1 (10.6%)    4.0 (10.6%)     4.4 (3.7%)     4.0 (4.1%)     4.8 (9.0%)
+J1: Get Post With Author                    2.5 (10.1%)     4.2 (4.6%)     3.6 (3.3%)    3.5 (10.5%)    4.0 (12.2%)
+M1: Create Post With Categories             5.1 (16.7%)    8.0 (10.0%)   16.0 (13.5%)     8.7 (6.7%)     8.3 (9.2%)
+M2: Get Post With Categories                 2.9 (9.4%)    4.4 (14.4%)    3.5 (13.3%)     4.0 (5.3%)     4.5 (4.8%)
+R1: Get User By ID                          2.4 (11.3%)     3.2 (9.9%)     3.3 (4.6%)     2.7 (4.1%)     3.0 (9.0%)
+R2: Get Post By ID                          1.7 (12.7%)    3.1 (10.3%)    3.2 (12.5%)    2.6 (14.1%)     3.9 (6.5%)
+R3: Get Paginated Posts                     2.8 (10.1%)     3.2 (6.4%)    2.8 (11.1%)     3.0 (9.2%)     4.1 (8.1%)
+U1: Update User                             2.8 (12.7%)    4.3 (11.2%)     4.4 (9.8%)    4.3 (11.0%)     5.3 (6.2%)
+U2: Update Post                             3.9 (19.2%)     4.4 (9.5%)    3.8 (10.7%)    4.0 (20.1%)     5.3 (7.7%)
+
+┌─ Overhead % vs Raw SQL (based on merged mean execution time)
+
+  prisma:
+    C1: Create User                              15.2%
+    C2: Create Post                               9.4%
+    C3: Bulk Insert Posts (10)                   35.7%
+    D1: Delete User                              12.4%
+    D2: Bulk Delete Posts by Author              29.5%
+    J1: Get Post With Author                     68.3%
+    M1: Create Post With Categories              57.2%
+    M2: Get Post With Categories                 52.3%
+    R1: Get User By ID                           31.6%
+    R2: Get Post By ID                           79.2%
+    R3: Get Paginated Posts                      16.8%
+    U1: Update User                              53.1%
+    U2: Update Post                              10.6%
+
+  typeorm:
+    C1: Create User                             133.1%
+    C2: Create Post                             138.0%
+    C3: Bulk Insert Posts (10)                   23.4%
+    D1: Delete User                              14.5%
+    D2: Bulk Delete Posts by Author              41.9%
+    J1: Get Post With Author                     44.7%
+    M1: Create Post With Categories             211.9%
+    M2: Get Post With Categories                 22.5%
+    R1: Get User By ID                           37.2%
+    R2: Get Post By ID                           88.0%
+    R3: Get Paginated Posts                       2.7%
+    U1: Update User                              57.4%
+    U2: Update Post                              -3.1%
+
+  sequelize:
+    C1: Create User                              61.0%
+    C2: Create Post                              53.1%
+    C3: Bulk Insert Posts (10)                    6.4%
+    D1: Delete User                               3.4%
+    D2: Bulk Delete Posts by Author              29.8%
+    J1: Get Post With Author                     38.4%
+    M1: Create Post With Categories              69.0%
+    M2: Get Post With Categories                 37.6%
+    R1: Get User By ID                           13.7%
+    R2: Get Post By ID                           50.4%
+    R3: Get Paginated Posts                       7.9%
+    U1: Update User                              53.9%
+    U2: Update Post                               2.5%
+
+  drizzle:
+    C1: Create User                              43.1%
+    C2: Create Post                              75.6%
+    C3: Bulk Insert Posts (10)                   31.8%
+    D1: Delete User                              22.5%
+    D2: Bulk Delete Posts by Author              55.3%
+    J1: Get Post With Author                     57.7%
+    M1: Create Post With Categories              61.4%
+    M2: Get Post With Categories                 54.4%
+    R1: Get User By ID                           23.1%
+    R2: Get Post By ID                          126.6%
+    R3: Get Paginated Posts                      47.1%
+    U1: Update User                              87.4%
+    U2: Update Post                              34.0%
+
+┌─ Memory Consumption (MB) — Mean (CV%) — Merged
+
+Operation                                        rawsql         prisma        typeorm      sequelize        drizzle
+-------------------------------------------------------------------------------------------------------------------
+C1: Create User                            29.50 (0.0%)   29.51 (0.0%)   29.63 (0.0%)   29.59 (0.0%)   29.57 (0.0%)
+C2: Create Post                            29.51 (0.0%)   29.53 (0.0%)   29.67 (0.0%)   29.62 (0.0%)   29.61 (0.0%)
+C3: Bulk Insert Posts (10)                 29.56 (0.0%)   29.56 (0.0%)   29.77 (0.0%)   29.75 (0.0%)   29.73 (0.0%)
+D1: Delete User                            29.57 (0.0%)   29.58 (0.0%)   29.63 (0.0%)   29.61 (0.0%)   29.63 (0.0%)
+D2: Bulk Delete Posts by Author            29.59 (0.0%)   29.59 (0.0%)   29.66 (0.0%)   29.63 (0.0%)   29.64 (0.0%)
+J1: Get Post With Author                   29.60 (0.0%)   29.62 (0.0%)   29.71 (0.0%)   29.74 (0.0%)   29.71 (0.0%)
+M1: Create Post With Categories            29.63 (0.0%)   29.63 (0.0%)   30.09 (0.0%)   29.86 (0.0%)   29.75 (0.0%)
+M2: Get Post With Categories               29.63 (0.0%)   29.66 (0.0%)   29.74 (0.0%)   29.79 (0.0%)   29.75 (0.0%)
+R1: Get User By ID                         29.55 (0.0%)   29.56 (0.0%)   29.62 (0.0%)   29.61 (0.0%)   29.60 (0.0%)
+R2: Get Post By ID                         29.55 (0.0%)   29.57 (0.0%)   29.64 (0.0%)   29.62 (0.0%)   29.62 (0.0%)
+R3: Get Paginated Posts                    29.60 (0.0%)   29.60 (0.0%)   29.72 (0.0%)   29.70 (0.0%)   29.71 (0.0%)
+U1: Update User                            29.58 (0.0%)   29.59 (0.0%)   29.65 (0.0%)   29.67 (0.0%)   29.65 (0.0%)
+U2: Update Post                            29.57 (0.0%)   29.57 (0.0%)   29.64 (0.0%)   29.65 (0.0%)   29.64 (0.0%)
+
+================================================================================
+Dataset Size: 100000
+================================================================================
+
+┌─ Execution Time (ms) — Mean (CV%) — Merged from 3 runs
+
+Operation                                        rawsql         prisma        typeorm      sequelize        drizzle
+-------------------------------------------------------------------------------------------------------------------
+C1: Create User                              4.1 (9.7%)    3.7 (33.3%)     6.7 (8.6%)    5.4 (46.1%)    5.1 (11.9%)
+C2: Create Post                             2.8 (10.8%)     4.4 (6.6%)     7.4 (6.5%)    5.1 (10.1%)     5.5 (3.8%)
+C3: Bulk Insert Posts (10)                   4.4 (5.1%)     6.2 (6.8%)    5.9 (10.0%)     5.7 (9.2%)     6.2 (5.6%)
+D1: Delete User                             17.4 (7.7%)   17.9 (15.6%)   17.1 (10.1%)   19.0 (18.2%)   19.7 (11.2%)
+D2: Bulk Delete Posts by Author            15.5 (13.9%)   15.6 (11.3%)   16.1 (10.1%)    15.0 (9.0%)    14.9 (6.4%)
+J1: Get Post With Author                     1.9 (9.2%)    3.5 (11.2%)    3.9 (14.2%)    3.9 (13.0%)     4.1 (4.6%)
+M1: Create Post With Categories             5.2 (10.1%)     7.2 (7.6%)    15.2 (6.5%)     9.3 (7.1%)     8.8 (4.7%)
+M2: Get Post With Categories                2.6 (17.7%)     4.0 (5.4%)    4.0 (15.7%)    4.1 (14.7%)     4.4 (5.3%)
+R1: Get User By ID                          1.7 (13.7%)    3.0 (16.4%)    3.4 (33.1%)    2.2 (11.4%)     2.9 (7.7%)
+R2: Get Post By ID                          2.1 (10.7%)    3.0 (12.1%)    3.5 (10.5%)    3.0 (11.1%)     3.9 (3.8%)
+R3: Get Paginated Posts                     2.6 (13.8%)     3.2 (8.0%)     3.6 (9.3%)    3.3 (15.1%)     4.0 (5.3%)
+U1: Update User                             3.1 (10.9%)     3.3 (7.3%)    3.8 (10.7%)    4.2 (17.0%)     4.7 (9.5%)
+U2: Update Post                              2.9 (7.4%)    3.6 (16.1%)     4.8 (9.5%)    4.3 (33.1%)     5.5 (5.4%)
+
+┌─ Overhead % vs Raw SQL (based on merged mean execution time)
+
+  prisma:
+    C1: Create User                             -11.5%
+    C2: Create Post                              55.1%
+    C3: Bulk Insert Posts (10)                   40.8%
+    D1: Delete User                               3.0%
+    D2: Bulk Delete Posts by Author               0.8%
+    J1: Get Post With Author                     79.1%
+    M1: Create Post With Categories              37.7%
+    M2: Get Post With Categories                 54.7%
+    R1: Get User By ID                           74.7%
+    R2: Get Post By ID                           40.6%
+    R3: Get Paginated Posts                      24.4%
+    U1: Update User                               5.4%
+    U2: Update Post                              22.5%
+
+  typeorm:
+    C1: Create User                              62.5%
+    C2: Create Post                             163.0%
+    C3: Bulk Insert Posts (10)                   33.6%
+    D1: Delete User                              -1.2%
+    D2: Bulk Delete Posts by Author               3.7%
+    J1: Get Post With Author                    100.0%
+    M1: Create Post With Categories             191.0%
+    M2: Get Post With Categories                 56.5%
+    R1: Get User By ID                           98.8%
+    R2: Get Post By ID                           66.5%
+    R3: Get Paginated Posts                      40.5%
+    U1: Update User                              21.8%
+    U2: Update Post                              65.9%
+
+  sequelize:
+    C1: Create User                              30.7%
+    C2: Create Post                              80.0%
+    C3: Bulk Insert Posts (10)                   31.0%
+    D1: Delete User                               9.3%
+    D2: Bulk Delete Posts by Author              -3.5%
+    J1: Get Post With Author                    102.2%
+    M1: Create Post With Categories              78.0%
+    M2: Get Post With Categories                 60.5%
+    R1: Get User By ID                           28.2%
+    R2: Get Post By ID                           42.9%
+    R3: Get Paginated Posts                      25.6%
+    U1: Update User                              34.2%
+    U2: Update Post                              46.8%
+
+  drizzle:
+    C1: Create User                              24.1%
+    C2: Create Post                              94.6%
+    C3: Bulk Insert Posts (10)                   40.8%
+    D1: Delete User                              13.7%
+    D2: Bulk Delete Posts by Author              -3.9%
+    J1: Get Post With Author                    108.8%
+    M1: Create Post With Categories              68.1%
+    M2: Get Post With Categories                 72.3%
+    R1: Get User By ID                           65.8%
+    R2: Get Post By ID                           83.6%
+    R3: Get Paginated Posts                      53.2%
+    U1: Update User                              48.0%
+    U2: Update Post                              87.9%
+
+┌─ Memory Consumption (MB) — Mean (CV%) — Merged
+
+Operation                                        rawsql         prisma        typeorm      sequelize        drizzle
+-------------------------------------------------------------------------------------------------------------------
+C1: Create User                            26.75 (0.0%)   26.71 (0.1%)   26.88 (0.0%)   26.86 (0.0%)   26.83 (0.0%)
+C2: Create Post                            26.77 (0.0%)   26.77 (0.0%)   26.90 (0.0%)   26.88 (0.0%)   26.86 (0.0%)
+C3: Bulk Insert Posts (10)                 26.85 (0.0%)   26.84 (0.0%)   27.10 (0.1%)   27.19 (0.2%)   27.25 (0.1%)
+D1: Delete User                            28.38 (0.0%)   28.39 (0.0%)   28.47 (0.0%)   28.49 (0.0%)   28.51 (0.0%)
+D2: Bulk Delete Posts by Author            28.47 (0.0%)   28.46 (0.0%)   28.55 (0.0%)   28.54 (0.0%)   28.54 (0.0%)
+J1: Get Post With Author                   28.66 (0.0%)   28.68 (0.0%)   28.84 (0.5%)   28.91 (0.1%)   28.91 (0.0%)
+M1: Create Post With Categories            28.92 (0.0%)   28.93 (0.0%)   29.42 (0.1%)   29.22 (0.0%)   29.14 (0.0%)
+M2: Get Post With Categories               29.05 (0.0%)   29.08 (0.0%)   29.16 (0.0%)   29.23 (0.0%)   29.21 (0.0%)
+R1: Get User By ID                         27.28 (0.0%)   27.31 (0.0%)   27.52 (0.5%)   27.63 (0.2%)   27.72 (0.1%)
+R2: Get Post By ID                         27.76 (0.0%)   27.79 (0.0%)   27.89 (0.0%)   27.90 (0.0%)   27.94 (0.0%)
+R3: Get Paginated Posts                    27.98 (0.0%)   27.97 (0.0%)   28.12 (0.0%)   28.15 (0.0%)   28.17 (0.0%)
+U1: Update User                            28.12 (0.0%)   28.11 (0.0%)   28.22 (0.1%)   28.32 (0.1%)   28.33 (0.0%)
+U2: Update Post                            28.33 (0.0%)   28.35 (0.0%)   28.42 (0.0%)   28.45 (0.0%)   28.44 (0.0%)
+
+================================================================================
+MERGE METHODOLOGY
+================================================================================
+Three benchmark runs were compared. For each operation/framework/dataset:
+- Runs with CV% > 50% were excluded as outliers (likely caused by system interference)
+- The median of the remaining mean execution times was selected
+- This provides a stable central estimate unaffected by single-run anomalies
+
+Stability comparison across 3 runs (number of unstable operations per framework):
+  Report 1 (19:46): rawsql=9, prisma=4, typeorm=4, sequelize=5, drizzle=3
+  Report 2 (20:02): rawsql=9, prisma=4, typeorm=6, sequelize=6, drizzle=3
+  Report 3 (20:19): rawsql=8, prisma=2, typeorm=1, sequelize=2, drizzle=1
+  → Report 3 had the most stable conditions overall
+
+Note: At dataset size 100, all runs show high instability due to the
+50ms GC pause dominating actual query time. Results at sizes 1000+ are
+more reliable.

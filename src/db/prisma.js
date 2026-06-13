@@ -1,5 +1,22 @@
 const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { DATABASE_URL } = require('../config');
+const queryLogger = require('../query-logger');
+
+const prismaOptions = {
+  datasources: { db: { url: DATABASE_URL + '?connection_limit=10' } },
+};
+
+if (process.env.QUERY_LOG) {
+  prismaOptions.log = [{ level: 'query', emit: 'event' }];
+}
+
+const prisma = new PrismaClient(prismaOptions);
+
+if (process.env.QUERY_LOG) {
+  prisma.$on('query', (e) => {
+    queryLogger.log('prisma', e.query, e.params ? JSON.parse(e.params) : []);
+  });
+}
 
 const init = () => prisma.$connect();
 
@@ -7,26 +24,8 @@ async function createUser(username, email) {
   return prisma.users.create({ data: { username, email } });
 }
 
-async function createPost(title, content, published, views, author_id) {
-  return prisma.posts.create({
-    data: { title, content, published, views, authorId: author_id },
-  });
-}
-
-async function bulkInsertPosts(postsData) {
-  const prismaPosts = postsData.map(p => ({
-    title: p.title, content: p.content, published: p.published,
-    views: p.views, authorId: p.author_id,
-  }));
-  return prisma.posts.createMany({ data: prismaPosts });
-}
-
 async function getUserById(id) {
   return prisma.users.findUnique({ where: { id } });
-}
-
-async function getPostById(id) {
-  return prisma.posts.findUnique({ where: { id } });
 }
 
 async function getPaginatedPosts(offset, limit) {
@@ -70,26 +69,24 @@ async function getPostWithCategories(id) {
   });
 }
 
+async function bulkInsertPosts(postList) {
+  return prisma.posts.createMany({
+    data: postList.map(p => ({
+      title: p.title,
+      content: p.content,
+      published: p.published,
+      views: p.views,
+      authorId: p.author_id,
+    })),
+  });
+}
+
 async function updateUser(id, data) {
   return prisma.users.update({ where: { id }, data });
 }
 
-async function updatePost(id, data) {
-  return prisma.posts.update({ where: { id }, data });
-}
-
 async function deleteUser(id) {
   return prisma.users.delete({ where: { id } });
-}
-
-async function deletePost(id) {
-  return prisma.posts.delete({ where: { id } });
-}
-
-// D2: Bulk delete posts by author_id
-async function deletePostsByAuthor(authorId) {
-  const result = await prisma.posts.deleteMany({ where: { authorId } });
-  return result.count;
 }
 
 async function close() {
@@ -101,9 +98,9 @@ async function warmQuery() {
 }
 
 module.exports = {
-  init, prisma, createUser, createPost, bulkInsertPosts,
-  getUserById, getPostById, getPaginatedPosts,
+  init, prisma, createUser,
+  getUserById, getPaginatedPosts,
   getPostWithAuthor, createPostWithCategories, getPostWithCategories,
-  updateUser, updatePost, deleteUser, deletePost, deletePostsByAuthor,
+  bulkInsertPosts, updateUser, deleteUser,
   close, warmQuery,
 };

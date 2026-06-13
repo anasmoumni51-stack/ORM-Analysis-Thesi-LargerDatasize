@@ -18,21 +18,16 @@ function log(line = '') {
 
 const OP_NAMES = {
   C1: 'Create User',
-  C2: 'Create Post',
-  C3: 'Bulk Insert Posts (10)',
+  C3: 'Bulk Insert Posts',
   R1: 'Get User By ID',
-  R2: 'Get Post By ID',
   R3: 'Get Paginated Posts',
   U1: 'Update User',
-  U2: 'Update Post',
   D1: 'Delete User',
-  D2: 'Bulk Delete Posts by Author',
   J1: 'Get Post With Author',
-  M1: 'Create Post With Categories',
-  M2: 'Get Post With Categories',
+  M1: 'Create Post With 3 Categories',
 };
 
-const OP_CODES = ['C1', 'C2', 'C3', 'R1', 'R2', 'R3', 'U1', 'U2', 'D1', 'D2', 'J1', 'M1', 'M2'];
+const OP_CODES = ['C1', 'C3', 'R1', 'R3', 'U1', 'D1', 'J1', 'M1'];
 const FWS = ['rawsql', 'prisma', 'typeorm', 'sequelize', 'drizzle'];
 
 for (const file of files) {

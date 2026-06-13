@@ -2,6 +2,7 @@ const { pgTable, serial, varchar, text, boolean, integer, timestamp, primaryKey 
 const { eq } = require('drizzle-orm');
 const { drizzle } = require('drizzle-orm/postgres-js');
 const postgres = require('postgres');
+const queryLogger = require('../query-logger');
 
 const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -38,8 +39,16 @@ let client;
 let db;
 
 const init = () => {
-  client = postgres(require('../config').DATABASE_URL);
-  db = drizzle(client, { schema });
+  client = postgres(require('../config').DATABASE_URL, { max: 10 });
+  const drizzleOptions = { schema };
+  if (process.env.QUERY_LOG) {
+    drizzleOptions.logger = {
+      logQuery(query, params) {
+        queryLogger.log('drizzle', query, params || []);
+      }
+    };
+  }
+  db = drizzle(client, drizzleOptions);
   return { db, client };
 };
 
@@ -58,21 +67,8 @@ const createUser = async (username, email) => {
   return result[0];
 };
 
-const createPost = async (title, content, published, views, author_id) => {
-  const result = await db.insert(posts).values({ title, content, published, views, author_id }).returning();
-  return result[0];
-};
-
-const bulkInsertPosts = (postsArray) => {
-  return db.insert(posts).values(postsArray);
-};
-
 const getUserById = (id) => {
   return db.select().from(users).where(eq(users.id, id)).limit(1).then(res => res.length > 0 ? res[0] : null);
-};
-
-const getPostById = (id) => {
-  return db.select().from(posts).where(eq(posts.id, id)).limit(1).then(res => res.length > 0 ? res[0] : null);
 };
 
 const getPaginatedPosts = (offset, limit) => {
@@ -113,32 +109,18 @@ const getPostWithCategories = async (id) => {
   return post;
 };
 
-const updateUser = async (id, data) => {
-  const result = await db.update(users).set(data).where(eq(users.id, id)).returning();
-  return result[0];
+const bulkInsertPosts = async (postList) => {
+  const result = await db.insert(posts).values(postList).returning();
+  return result;
 };
 
-const updatePost = async (id, data) => {
-  const result = await db.update(posts).set(data).where(eq(posts.id, id)).returning();
-  return result[0];
+const updateUser = async (id, data) => {
+  await db.update(users).set(data).where(eq(users.id, id));
 };
 
 const deleteUser = async (id) => {
-  const result = await db.delete(users).where(eq(users.id, id)).returning();
-  return result[0] || null;
-};
-
-const deletePost = async (id) => {
-  const result = await db.delete(posts).where(eq(posts.id, id)).returning();
-  return result[0] || null;
-};
-
-// D2: Bulk delete posts by author_id
-const deletePostsByAuthor = async (authorId) => {
-  // Remove .returning() to avoid fetching all deleted rows (overhead at large scale)
-  // Drizzle returns { count } property without .returning()
-  const result = await db.delete(posts).where(eq(posts.author_id, authorId));
-  return result.count || 0;
+  await db.delete(users).where(eq(users.id, id));
+  return true;
 };
 
 module.exports = {
@@ -146,19 +128,14 @@ module.exports = {
   close,
   warmQuery,
   createUser,
-  createPost,
-  bulkInsertPosts,
   getUserById,
-  getPostById,
   getPaginatedPosts,
   getPostWithAuthor,
   createPostWithCategories,
   getPostWithCategories,
+  bulkInsertPosts,
   updateUser,
-  updatePost,
   deleteUser,
-  deletePost,
-  deletePostsByAuthor,
   users,
   posts,
   categories,
